@@ -5,6 +5,9 @@ set( LIB_SOURCES
     Nlhe.cpp
     Stack.cpp
     Player.cpp
+    HoleCards.cpp
+    HandHistory.cpp
+    DecisionEngine.cpp
     )
 
 set( LIBNAME game)

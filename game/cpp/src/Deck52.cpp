@@ -16,6 +16,7 @@ void Deck52::shuffle()
     static std::random_device rng{};
     static std::mt19937 generator(rng());
     std::shuffle(std::begin(cards_), std::end(cards_), generator);
+    position_ = 0;
 }
 
 std::string Deck52::to_string() const
@@ -24,6 +25,20 @@ std::string Deck52::to_string() const
     for( const auto& card : cards_)
         s += card.to_string() + " ";
     return s;
+}
+
+HoleCards Deck52::getHoleCards()
+{
+    Card52 card1 = dealCard();
+    Card52 card2 = dealCard();
+    return HoleCards(card1, card2);
+}
+
+Card52 Deck52::dealCard()
+{
+    Card52 card = cards_[position_];
+    position_ += 1;
+    return card;
 }
 
 }
