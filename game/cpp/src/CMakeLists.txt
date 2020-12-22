@@ -2,5 +2,7 @@ set( LIB_SOURCES
     Card52.cpp
     Deck52.cpp)
 
-add_library( lib SHARED ${LIB_SOURCES} )
-target_include_directories(lib PUBLIC ../include)
+set( LIBNAME game)
+
+add_library( ${LIBNAME} SHARED ${LIB_SOURCES} )
+target_include_directories(${LIBNAME} PUBLIC ../include)

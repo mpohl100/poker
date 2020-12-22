@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace game52{
 
 enum Rank52{
@@ -18,12 +20,16 @@ enum Rank52{
     Ace,
 };
 
+std::string to_string(Rank52 rank);
+
 enum Suit{
     Hearts,
     Diamonds,
     Spades,
     Clubs,
 };
+
+std::string to_string(Suit suit);
 
 class Card52{
     public: 
@@ -38,6 +44,7 @@ class Card52{
         Rank52 rank() const;
         Suit suit() const;
         int nb() const;
+        std::string to_string() const;
     private:    
         int nb_ = 0;
 };
