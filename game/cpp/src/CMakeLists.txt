@@ -1,6 +1,11 @@
 set( LIB_SOURCES 
     Card52.cpp
-    Deck52.cpp)
+    Deck52.cpp
+    Pot.cpp 
+    Nlhe.cpp
+    Stack.cpp
+    Player.cpp
+    )
 
 set( LIBNAME game)
 
