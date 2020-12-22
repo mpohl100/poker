@@ -18,6 +18,8 @@ class Deck52{
         void shuffle();
         std::string to_string() const;
         HoleCards getHoleCards();
+        std::vector<Card52> getFlop();
+        Card52 getCard();
 
     private:
         Card52 dealCard();

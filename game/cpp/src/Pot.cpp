@@ -2,9 +2,17 @@
 
 namespace game52 {
 
-void Pot::put_amount(int amt)
+void Pot::putAmount(Stack amt)
 {
     amount_ += amt;
 }
+
+Stack Pot::get()
+{
+    auto amount = amount_;
+    amount_ = 0;
+    return amount;
+}
+
 
 }

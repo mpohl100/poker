@@ -9,11 +9,20 @@ struct Stack{
     Stack& operator=(Stack const&) = default;
     Stack(Stack&&) = default;
     Stack& operator=(Stack&&) = default;
-    int get_amount(int amt); 
 
+    Stack getAmount(Stack amt); 
+     
+    Stack& operator+=(Stack const& other);
+     
     int amount_ = 0;
 };
 
+bool operator==(Stack left, Stack right);
+bool operator!=(Stack left, Stack right);
 
+bool operator<(Stack left, Stack right);
+bool operator<=(Stack left, Stack right);
+bool operator>(Stack left, Stack right);
+bool operator>=(Stack left, Stack right);
 
 }

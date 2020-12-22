@@ -18,6 +18,8 @@ public:
 private:
     Player& small_blind_player();
     Player& big_blind_player();
+    bool ready(Stack amt, Board const& board);
+    bool playRound(Stack currentBet, Board const& board, HandHistory& HandHistory, Pot& pot);
 
     Deck52 deck_;
     size_t dealer_ = 0;

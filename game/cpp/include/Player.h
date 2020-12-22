@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Action.h"
 #include "HoleCards.h"
 #include "Stack.h"
 #include "DecisionEngine.h"
@@ -19,12 +20,14 @@ class Player{
         Player(Player&&) = default;
         Player& operator=(Player&&) = default;
 
-        int get_amount(int amount);
+        Stack getAmount(Stack amount);
+        void putAmount(Stack amt);
         void dealHoleCards(HoleCards const&);
         bool hasHoleCards() const;
-        Stack decide(Pot const& pot, Board const& board, HandHistory& handHistory);
-
+        Stack decide(Pot& pot, Board const& board, HandHistory& handHistory);
+        bool ready(Stack amt, Board const& board) const;
     private:
+        HandAction lastAction_;
         Stack stack_;
         DecisionEngine engine_;
         HoleCards holeCards_;

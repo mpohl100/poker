@@ -8,6 +8,7 @@ set( LIB_SOURCES
     HoleCards.cpp
     HandHistory.cpp
     DecisionEngine.cpp
+    Board.cpp
     )
 
 set( LIBNAME game)

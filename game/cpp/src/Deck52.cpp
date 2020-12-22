@@ -41,4 +41,21 @@ Card52 Deck52::dealCard()
     return card;
 }
 
+std::vector<Card52> Deck52::getFlop()
+{
+    std::vector<Card52> flop;
+    // burn card
+    dealCard();
+    for(int i = 0; i < 3; ++i)
+        flop.push_back(dealCard());
+    return flop;
+}
+
+Card52 Deck52::getCard()
+{
+    // burn card
+    dealCard();
+    return dealCard();
+}
+
 }

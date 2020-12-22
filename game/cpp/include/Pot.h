@@ -1,12 +1,15 @@
 #pragma once
 
+#include "Stack.h"
+
 namespace game52{
 
 class Pot{
     public:
-        void put_amount(int amt);
+        void putAmount(Stack amt);
+        Stack get();
     private:
-        int amount_ = 0;
+        Stack amount_ = 0;
 };
 
 }
