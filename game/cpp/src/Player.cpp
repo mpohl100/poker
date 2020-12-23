@@ -4,6 +4,11 @@
 
 namespace game52{
 
+Player::Player(Stack stack, DecisionEngine const& engine)
+    : stack_(stack)
+    , engine_(engine)
+{}
+
 Stack Player::getAmount(Stack amt)
 {
     return stack_.getAmount(amt); 

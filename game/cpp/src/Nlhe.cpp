@@ -2,6 +2,8 @@
 #include "Pot.h"
 #include "Board.h"
 #include "HandHistory.h"
+#include "DecisionEngine.h"
+#include "Player.h"
 #include <algorithm>
 
 namespace game52{
@@ -9,7 +11,10 @@ namespace game52{
 Nlhe52::Nlhe52(int nb_players)
 {
     for(int i = 0; i < nb_players; ++i)
-        players_.push_back(Player{});
+        players_.push_back(Player(Stack(100*bigBlind), DecisionEngine{}));
+    // Players in hand 0: dealer, 1: small blind, 2: big blind
+    for(auto& player : players_)
+        playersInHand_.push_back(&player);
 }
 
 void Nlhe52::playHand()
@@ -17,20 +22,20 @@ void Nlhe52::playHand()
     // shuffle
     deck_.shuffle();
     // move dealer button
-    std::rotate(players_.begin(), players_.end(), players_.begin()+1);
+    std::rotate(playersInHand_.begin(), playersInHand_.begin()+1, playersInHand_.end());
     // post blinds and antes
     Pot pot;
     Board board;
     HandHistory handHistory;
-    pot.putAmount(small_blind_player().getAmount(small_blind_));
-    pot.putAmount(big_blind_player().getAmount(big_blind_));
+    pot.putAmount(small_blind_player().getAmount(smallBlind));
+    pot.putAmount(big_blind_player().getAmount(bigBlind));
 
     // deal hands
     for(auto& player : players_)
         player.dealHoleCards(deck_.getHoleCards());
 
     // pre-flop play
-    if(bool finished = playRound(3, Stack(big_blind_), board, handHistory, pot); finished)
+    if(bool finished = playRound(3, Stack(bigBlind), board, handHistory, pot); finished)
         return;
 
     // flop play
@@ -77,11 +82,11 @@ bool Nlhe52::playRound(int starting_pos, Stack currentBet, Board const& board, H
     while(not ready(currentBet, board))
     {
         int nb = 0;
-        for(auto& player : players_)
+        for(auto& player : playersInHand_)
         {
-            if( not player.hasHoleCards() or (i == 0 and nb++ < starting_pos))
+            if( not player->hasHoleCards() or (i == 0 and nb++ < starting_pos))
                 continue;
-            currentBet = player.decide(pot, board, handHistory);
+            currentBet = player->decide(pot, board, handHistory);
         }
         i++;
     }

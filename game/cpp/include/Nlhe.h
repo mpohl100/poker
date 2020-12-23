@@ -24,9 +24,9 @@ private:
     Deck52 deck_;
     size_t dealer_ = 0;
     std::vector<Player> players_;
-    int small_blind_ = 10;
-    int big_blind_ = small_blind_*2;
-    int stack_size = 1000;
+    std::vector<Player*> playersInHand_;
+    int smallBlind = 10;
+    int bigBlind = smallBlind*2;
 };
 
 }
