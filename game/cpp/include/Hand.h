@@ -20,6 +20,7 @@ public:
     Hand& operator=(Hand&&) = default;
     
     Player* player_;
+    std::vector<Card52> getCards() const;
 private:
     std::vector<Card52> cards_;
 };

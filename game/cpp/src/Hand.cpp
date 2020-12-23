@@ -1,6 +1,7 @@
 #include "Hand.h"
 #include "HoleCards.h"
 #include "Board.h"
+#include "HowardsCombinatorics.h"
 
 #include <stdexcept>
 #include <map>
@@ -18,6 +19,11 @@ Hand::Hand(Player* player, HoleCards const& holeCards, Board const& board)
     cards_.insert(cards_.end(), boardCards.begin(), boardCards.end());
 }
 
+std::vector<Card52> Hand::getCards() const
+{
+    return cards_;
+}
+
 class ClassifiedHand{
 public:
     enum HandRank52{
@@ -32,25 +38,25 @@ public:
         StraightFlush,
     };
 
-    ClassifiedHand(std::vector<Card52> cards)
-        : cards_(cards) 
+    ClassifiedHand(std::vector<Card52>::iterator begin, std::vector<Card52>::iterator end )
+        : cards_({begin, end}) 
     {
-        if(cards.size() != 5)
+        if(cards_.size() != 5)
             throw std::runtime_error("classified hand != size 5");
-        for(auto& card : cards)
+        for(auto& card : cards_)
             rankOccurences_[card.rank()]++;
         if(rankOccurences_.size() == 5) // HighCard, Flush, Straight or StraightFlush
         {
             // check for flush
             std::map<Suit, int> suit_occurences;
-            for(const auto& card : cards)
+            for(const auto& card : cards_)
                 suit_occurences[card.suit()]++;
             bool isFlush = suit_occurences.size() == 1;
 
             // check for straight except by wheel (A,2,3,4,5)
             auto compare = [](const auto& l, const auto& r){ return l.rank() < r.rank();};
-            auto minRank = *std::min_element(cards.begin(), cards.end(), compare);
-            auto maxRank = *std::max_element(cards.begin(), cards.end(), compare);
+            auto minRank = *std::min_element(cards_.begin(), cards_.end(), compare);
+            auto maxRank = *std::max_element(cards_.begin(), cards_.end(), compare);
             bool isStraight = (maxRank.rank() - minRank.rank()) == 5;
 
             // check for wheel (A,2,3,4,5)
@@ -63,8 +69,8 @@ public:
                     rightRank -= 13; 
                 return leftRank < rightRank;
             };
-            minRank = *std::min_element(cards.begin(), cards.end(), compareWheel);
-            maxRank = *std::max_element(cards.begin(), cards.end(), compareWheel);
+            minRank = *std::min_element(cards_.begin(), cards_.end(), compareWheel);
+            maxRank = *std::max_element(cards_.begin(), cards_.end(), compareWheel);
             isStraight = minRank.rank() == Ace and maxRank.rank() == Five;
 
             // set the handrank
@@ -223,9 +229,26 @@ bool operator<(ClassifiedHand const& l, ClassifiedHand const& r)
 }
 
 
+ClassifiedHand getBestHand(Hand hand)
+{ 
+    auto cards = hand.getCards();
+    ClassifiedHand bestHand = ClassifiedHand(cards.begin(), cards.begin() + 5);
+    for_each_combination(cards.begin(), cards.begin()+5, cards.end(),
+    [&bestHand](const auto& first, const auto& last){
+        ClassifiedHand hand(first, last);
+        if(bestHand < hand)
+            bestHand = hand;
+        return false;
+    });
+    return bestHand;
+}
 
 int compareHands([[maybe_unused]] Hand left, [[maybe_unused]] Hand right)
 {
+    ClassifiedHand bestLeft = getBestHand(left);
+    ClassifiedHand bestRight = getBestHand(right);
+    if(bestLeft < bestRight) return -1;
+    if(bestRight < bestLeft) return 1;
     return 0;
 }
 
