@@ -11,4 +11,9 @@ bool HoleCards::empty() const
     return cards_.empty();
 }
 
+std::vector<Card52> const& HoleCards::getCards() const
+{
+    return cards_;
+}
+
 }

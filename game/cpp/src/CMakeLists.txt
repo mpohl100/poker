@@ -9,6 +9,7 @@ set( LIB_SOURCES
     HandHistory.cpp
     DecisionEngine.cpp
     Board.cpp
+    Hand.cpp
     )
 
 set( LIBNAME game)

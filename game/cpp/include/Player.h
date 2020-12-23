@@ -24,6 +24,7 @@ class Player{
         void putAmount(Stack amt);
         void dealHoleCards(HoleCards const&);
         bool hasHoleCards() const;
+        HoleCards getHoleCards() const;
         Stack decide(Pot& pot, Board const& board, HandHistory& handHistory);
         bool ready(Stack amt, Board const& board) const;
     private:

@@ -4,6 +4,7 @@
 #include "HandHistory.h"
 #include "DecisionEngine.h"
 #include "Player.h"
+#include "Hand.h"
 #include <algorithm>
 
 namespace game52{
@@ -54,6 +55,21 @@ void Nlhe52::playHand()
         return;
 
     // show down
+    std::vector<Hand> hands;
+    for(auto& player : players_)
+        if( player.hasHoleCards() )
+            hands.push_back(Hand(&player, player.getHoleCards(), board));
+    std::sort(hands.begin(), hands.end(), [](const auto& l, const auto& r){ return compareHands(l,r) == 1;});
+    int indexFirstLoser = 0;
+    for(size_t i = 1; i < hands.size(); ++i)
+        if(compareHands(hands[i-1], hands[i]) != 0)
+        {
+            indexFirstLoser = i;
+            break;
+        }
+    Stack amount = pot.getAmount() / indexFirstLoser;
+    for(int i = 0; i < indexFirstLoser; ++i)
+        hands[0].player_->putAmount(amount);
 }
 
 Player& Nlhe52::small_blind_player()

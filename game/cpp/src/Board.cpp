@@ -30,4 +30,10 @@ void Board::dealRiver(Card52 river)
     cards_.push_back(river);
 }
 
+
+std::vector<Card52> const& Board::getCards() const
+{
+    return cards_;
+}
+
 }

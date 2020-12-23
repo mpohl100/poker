@@ -16,6 +16,7 @@ class HoleCards
         HoleCards& operator=(HoleCards&&) = default;
 
         bool empty() const;
+        std::vector<Card52> const& getCards() const;
     private:
         std::vector<Card52> cards_;
 };

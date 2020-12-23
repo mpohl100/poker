@@ -29,6 +29,12 @@ bool Player::hasHoleCards() const
     return holeCards_.empty();
 }
 
+
+HoleCards Player::getHoleCards() const
+{
+    return holeCards_;
+}
+
 Stack Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
 {
     HandAction next = engine_.decide(pot, board, handHistory);

@@ -19,6 +19,7 @@ class Board{
         void dealFlop(std::vector<Card52> const& flop);
         void dealTurn(Card52 turn);
         void dealRiver(Card52 river);
+        std::vector<Card52> const& getCards() const;
     private:
         std::vector<Card52> cards_;
 
