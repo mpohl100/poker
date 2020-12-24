@@ -34,6 +34,7 @@ std::string to_string(Suit suit);
 class Card52{
     public: 
         Card52(Rank52 rank, Suit suit);
+        Card52(std::string const& str);
         Card52(int nb);
         Card52() = default;
         Card52(Card52 const&) = default;

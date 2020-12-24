@@ -42,8 +42,45 @@ std::string to_string(Suit suit)
     return "Unknown";
 }
 
+Rank52 getRank(char c)
+{
+    switch(c){
+        case '2': return Deuce;
+        case '3': return Three;
+        case '4': return Four;
+        case '5': return Five;
+        case '6': return Six;
+        case '7': return Seven;
+        case '8': return Eight;
+        case '9': return Nine;
+        case 'T': return Ten;
+        case 'J': return Jack;
+        case 'Q': return Queen;
+        case 'K': return King;
+        case 'A': return Ace;
+        default: throw std::runtime_error("wrong input rank: " + c); 
+    }
+    return Deuce;
+}
+
+Suit getSuit(char c)
+{
+    switch(c){
+        case 'h': return Hearts;
+        case 'd': return Diamonds;
+        case 's': return Spades;
+        case 'c': return Clubs;
+        default: throw std::runtime_error("wrong input suit: " + c);
+    }
+    return Hearts;
+}
+
 Card52::Card52(Rank52 rank, Suit suit)
     : nb_(rank*suit)
+{}
+
+Card52::Card52(std::string const& card)
+    : nb_(int(getRank(card[0]))*int(getSuit(card[1])))
 {}
 
 Card52::Card52(int nb)
