@@ -4,7 +4,7 @@
 #include "HowardsCombinatorics.h"
 
 
-#include <range/v3/all.hpp>
+#include <ranges>
 #include <stdexcept>
 #include <map>
 #include <algorithm>
@@ -124,9 +124,9 @@ int ClassifiedHand::sum() const
 
 ClassifiedHand ClassifiedHand::fromString(std::string const& str)
 {
-    auto cards =  str | ranges::view::split(' ')
-                      | ranges::view::transform([](auto &&rng) {
-        return std::string(&*rng.begin(), ranges::distance(rng));
+    auto cards =  str | std::ranges::views::split(' ')
+                      | std::ranges::views::transform([](auto &&rng) {
+        return std::string(&*rng.begin(), std::ranges::distance(rng));
     });
     std::vector<Card52> hand;
     for(auto card : cards)
