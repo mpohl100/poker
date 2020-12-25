@@ -15,10 +15,21 @@ Stack Stack::getAmount(Stack amt){
     }
 }
 
-Stack& Stack::operator+=(Stack const& other)
+Stack& Stack::operator+=(Stack other)
 {
     amount_ += other.amount_;
     return *this;
+}
+
+Stack& Stack::operator-=(Stack other)
+{
+    amount_ -= other.amount_;
+    return *this;
+}
+
+std::string Stack::toString() const
+{
+    return std::to_string(amount_);
 }
 
 bool operator==(Stack left, Stack right)
@@ -50,4 +61,11 @@ bool operator>=(Stack left, Stack right)
 {
     return left.amount_ >= right.amount_;
 }
+
+Stack operator-(Stack left, Stack right){
+    Stack ret = left;
+    ret -= right;
+    return ret;
+}
+
 }

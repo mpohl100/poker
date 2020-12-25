@@ -5,7 +5,9 @@
 #include "DecisionEngine.h"
 #include "Player.h"
 #include "Hand.h"
+
 #include <algorithm>
+#include <iostream>
 
 namespace game52{
 
@@ -24,6 +26,9 @@ void Nlhe52::playHand()
     deck_.shuffle();
     // move dealer button
     std::rotate(playersInHand_.begin(), playersInHand_.begin()+1, playersInHand_.end());
+    // post position indeces
+    for(size_t i = 0; i < playersInHand_.size(); ++i)
+        playersInHand_[i]->setPlayerIndex(i, playersInHand_.size());
     // post blinds and antes
     Pot pot;
     Board board;
@@ -36,7 +41,8 @@ void Nlhe52::playHand()
         player.dealHoleCards(deck_.getHoleCards());
 
     // pre-flop play
-    if(bool finished = playRound(3, Stack(bigBlind), board, handHistory, pot); finished)
+    int firstToAct = players_.size() > 3 ? 3 : 0;
+    if(bool finished = playRound(firstToAct, Stack(bigBlind), board, handHistory, pot); finished)
         return;
 
     // flop play
@@ -70,6 +76,8 @@ void Nlhe52::playHand()
     Stack amount = pot.getAmount() / indexFirstLoser;
     for(int i = 0; i < indexFirstLoser; ++i)
         hands[0].player_->putAmount(amount);
+
+    std::cout << handHistory.toString() << '\n';
 }
 
 Player& Nlhe52::small_blind_player()

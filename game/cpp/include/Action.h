@@ -9,19 +9,16 @@ namespace game52{
 
 class Player;
 
-enum class Action{
-    Fold,
-    Check,
-    Call,
-    Raise,
-};
-
 class HandAction{
-    public: 
-        std::shared_ptr<Player> player;
-        Stack previousBet;
-        Stack nextBet;
-        Street street;
+public: 
+    std::string toString() const;
+
+    std::shared_ptr<Player> player;
+    Stack previousBet;
+    Stack nextBet;
+    Street street;
+
+
 };
 
 }

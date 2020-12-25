@@ -10,6 +10,7 @@ class HandHistory{
     public:
         void logAction(HandAction const& action);
         HandAction getLast();
+        std::string toString() const;
     private:
         std::vector<HandAction> actions_;
 

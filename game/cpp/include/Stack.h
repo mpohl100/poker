@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace game52{
 
 struct Stack{
@@ -12,7 +14,9 @@ struct Stack{
 
     Stack getAmount(Stack amt); 
      
-    Stack& operator+=(Stack const& other);
+    Stack& operator+=(Stack other);
+    Stack& operator-=(Stack other);
+    std::string toString() const;
      
     int amount_ = 0;
 };
@@ -24,5 +28,7 @@ bool operator<(Stack left, Stack right);
 bool operator<=(Stack left, Stack right);
 bool operator>(Stack left, Stack right);
 bool operator>=(Stack left, Stack right);
+
+Stack operator-(Stack left, Stack right);
 
 }

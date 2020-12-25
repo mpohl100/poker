@@ -12,4 +12,13 @@ HandAction HandHistory::getLast()
     return *actions_.rbegin();
 }
 
+
+std::string HandHistory::toString() const
+{
+    std::string str;
+    for(const auto& action : actions_)
+        str += action.toString() + '\n';
+    return str;
+}
+
 }
