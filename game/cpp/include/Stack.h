@@ -19,15 +19,9 @@ struct Stack{
     std::string toString() const;
      
     int amount_ = 0;
+    
+    friend auto operator<=>(const Stack&, const Stack&) = default;
 };
-
-bool operator==(Stack left, Stack right);
-bool operator!=(Stack left, Stack right);
-
-bool operator<(Stack left, Stack right);
-bool operator<=(Stack left, Stack right);
-bool operator>(Stack left, Stack right);
-bool operator>=(Stack left, Stack right);
 
 Stack operator-(Stack left, Stack right);
 

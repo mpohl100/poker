@@ -32,36 +32,6 @@ std::string Stack::toString() const
     return std::to_string(amount_);
 }
 
-bool operator==(Stack left, Stack right)
-{
-    return left.amount_ == right.amount_;
-}
-
-bool operator!=(Stack left, Stack right)
-{
-    return left.amount_ != right.amount_;
-}
-
-bool operator<(Stack left, Stack right)
-{
-    return left.amount_ < right.amount_;
-}
-
-bool operator<=(Stack left, Stack right)
-{
-    return left.amount_ <= right.amount_;
-}
-
-bool operator>(Stack left, Stack right)
-{
-    return left.amount_ > right.amount_;
-}
-
-bool operator>=(Stack left, Stack right)
-{
-    return left.amount_ >= right.amount_;
-}
-
 Stack operator-(Stack left, Stack right){
     Stack ret = left;
     ret -= right;
