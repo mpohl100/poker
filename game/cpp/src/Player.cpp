@@ -53,8 +53,8 @@ HoleCards Player::getHoleCards() const
 
 Stack Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
 {
-    HandAction next = engine_.decide(pot, board, handHistory);
-    handHistory.logAction(next);
+    BettingAction next = engine_.decide(pot, board, handHistory);
+    handHistory.logAction(std::make_unique<BettingAction>(next));
     if(next.nextBet == 0)
     {
         // fold
@@ -71,9 +71,9 @@ Stack Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
 
 bool Player::ready(Stack amt, Board const& board) const
 {
-    if(board.street() != lastAction_.street)
+    if(board.street() != lastBet_.street)
         return false;
-    return lastAction_.nextBet == amt or not hasHoleCards(); 
+    return lastBet_.nextBet == amt or not hasHoleCards(); 
 }
 
 void Player::setPlayerIndex(int index, size_t size)

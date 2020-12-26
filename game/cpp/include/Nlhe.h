@@ -16,8 +16,8 @@ public:
 
     void playHand();
 private:
-    Player& small_blind_player();
-    Player& big_blind_player();
+    Player& smallBlindPlayer();
+    Player& bigBlindPlayer();
     bool ready(Stack amt, Board const& board);
     bool playRound(int starting_pos, Stack currentBet, Board const& board, HandHistory& HandHistory, Pot& pot);
 

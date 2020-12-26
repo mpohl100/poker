@@ -8,13 +8,11 @@ namespace game52{
 
 class HandHistory{
     public:
-        void logAction(HandAction const& action);
-        HandAction getLast();
+        void logAction(std::unique_ptr<HandAction> action);
+        BettingAction getLastBet(Street street);
         std::string toString() const;
     private:
-        std::vector<HandAction> actions_;
-
-
+        std::vector<std::unique_ptr<HandAction>> actions_;
 };
 
 }

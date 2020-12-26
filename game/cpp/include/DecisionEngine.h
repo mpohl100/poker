@@ -10,7 +10,7 @@ class HandHistory;
 
 class DecisionEngine{
     public:
-        HandAction decide(Pot const& pot, Board const& board, HandHistory& handHistory);
+        BettingAction decide(Pot const& pot, Board const& board, HandHistory& handHistory);
 };
 
 }

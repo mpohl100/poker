@@ -44,7 +44,7 @@ class Player{
         void setPlayerIndex(int index, size_t size);
         Position getPosition() const;
     private:
-        HandAction lastAction_;
+        BettingAction lastBet_;
         Stack stack_;
         DecisionEngine engine_;
         HoleCards holeCards_;

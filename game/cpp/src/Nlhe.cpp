@@ -33,14 +33,15 @@ void Nlhe52::playHand()
     Pot pot;
     Board board;
     HandHistory handHistory;
-    pot.putAmount(small_blind_player().getAmount(smallBlind));
-    pot.putAmount(big_blind_player().getAmount(bigBlind));
+    pot.putAmount(smallBlindPlayer().getAmount(smallBlind));
+    pot.putAmount(bigBlindPlayer().getAmount(bigBlind));
 
     // deal hands
     for(auto& player : players_)
         player.dealHoleCards(deck_.getHoleCards());
 
     // pre-flop play
+    // only with 4 players or more UTG gets to act first, otherwise the dealer always acts first.
     int firstToAct = players_.size() > 3 ? 3 : 0;
     if(bool finished = playRound(firstToAct, Stack(bigBlind), board, handHistory, pot); finished)
         return;
@@ -80,14 +81,14 @@ void Nlhe52::playHand()
     std::cout << handHistory.toString() << '\n';
 }
 
-Player& Nlhe52::small_blind_player()
+Player& Nlhe52::smallBlindPlayer()
 {
     if(players_.size() == 2)
         return players_[0];
     return players_[1];
 }
 
-Player& Nlhe52::big_blind_player()
+Player& Nlhe52::bigBlindPlayer()
 {
     if(players_.size() == 2)
         return players_[1];

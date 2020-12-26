@@ -5,10 +5,12 @@
 
 namespace game52{
 
-HandAction DecisionEngine::decide([[maybe_unused]] Pot const& pot, [[maybe_unused]] Board const& board, HandHistory& handHistory)
+BettingAction DecisionEngine::decide([[maybe_unused]] Pot const& pot, 
+                                    Board const& board, 
+                                    HandHistory& handHistory)
 {
     // TODO implement
-    HandAction action = handHistory.getLast();
+    BettingAction action = handHistory.getLastBet(board.street());
     action.nextBet = 0;
     return action;
 }
