@@ -40,15 +40,14 @@ class Player{
         bool hasHoleCards() const;
         HoleCards getHoleCards() const;
         Stack decide(Pot& pot, Board const& board, HandHistory& handHistory);
-        bool ready(Stack amt, Board const& board) const;
+        bool ready(Stack currentBet, Board const& board, HandHistory const& handHistory) const;
         void setPlayerIndex(int index, size_t size);
         Position getPosition() const;
     private:
-        BettingAction lastBet_;
         Stack stack_;
         DecisionEngine engine_;
         HoleCards holeCards_;
-        std::pair<int, size_t> pos_; // to deduce the position;
+        std::pair<int, size_t> pos_{0,2}; // to deduce the position;
 };
 
 }

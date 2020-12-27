@@ -2,6 +2,8 @@
 #include "HandHistory.h"
 #include "Pot.h"
 
+#include <iostream>
+
 namespace game52{
 
 std::string toString(Position pos)
@@ -42,7 +44,7 @@ void Player::dealHoleCards(HoleCards const& hole_cards)
 
 bool Player::hasHoleCards() const
 {
-    return holeCards_.empty();
+    return not holeCards_.empty();
 }
 
 
@@ -69,11 +71,14 @@ Stack Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
     return next.nextBet;
 }
 
-bool Player::ready(Stack amt, Board const& board) const
+bool Player::ready(Stack currentBet, Board const& board, HandHistory const& handHistory) const
 {
-    if(board.street() != lastBet_.street)
-        return false;
-    return lastBet_.nextBet == amt or not hasHoleCards(); 
+    if(not hasHoleCards())
+        return true;
+    std::optional<BettingAction> lastPlayerBet = handHistory.getLastBet(board.street(), this);
+    if(lastPlayerBet)
+        return lastPlayerBet->nextBet == currentBet;
+    return false;
 }
 
 void Player::setPlayerIndex(int index, size_t size)

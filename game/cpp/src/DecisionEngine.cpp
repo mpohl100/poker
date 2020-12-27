@@ -10,9 +10,13 @@ BettingAction DecisionEngine::decide([[maybe_unused]] Pot const& pot,
                                     HandHistory& handHistory)
 {
     // TODO implement
-    BettingAction action = handHistory.getLastBet(board.street());
-    action.nextBet = 0;
-    return action;
+    std::optional<BettingAction> action = handHistory.getLastBet(board.street());
+    if(action)
+    {
+        action->nextBet = 0;
+        return *action;
+    }
+    return BettingAction(board.street());
 }
 
 }

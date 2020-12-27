@@ -1,11 +1,11 @@
 #include <iostream>
-#include "Deck52.h"
+#include "Nlhe.h"
 
 
 int main(){
-    game52::Deck52 deck{};
-    deck.shuffle();
-    std::cout << deck.to_string();
+    game52::Nlhe52 holdem(2);
+    std::cout << "playing hand\n";
+    holdem.playHand();
     return 0;
 }
 
