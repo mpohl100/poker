@@ -59,8 +59,9 @@ Stack Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
     handHistory.logAction(std::make_unique<BettingAction>(next));
     if(next.nextBet == 0)
     {
-        // fold
-        holeCards_ = {};
+        // only fold, if it has been bet before
+        if(next.previousBet > 0)
+            holeCards_ = {};
     }
     else
     {

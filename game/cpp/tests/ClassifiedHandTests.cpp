@@ -8,7 +8,32 @@ using namespace game52;
 namespace {
 
 TEST_CASE("Hands", "[game]") {
-    SECTION("HandRanking") {
+    SECTION("HandRanks"){ 
+            CHECK(ClassifiedHand::fromString("Kh Td 2c 3s 5d").handRank_ == ClassifiedHand::HighCard);
+            CHECK(ClassifiedHand::fromString("Ah Td 2c 3s 5d").handRank_ == ClassifiedHand::HighCard);
+            CHECK(ClassifiedHand::fromString("Ah 2h 2c 3s 5d").handRank_ == ClassifiedHand::Pair);
+            CHECK(ClassifiedHand::fromString("Ah Td Tc 3s 5d").handRank_ == ClassifiedHand::Pair);
+            CHECK(ClassifiedHand::fromString("Ah Ad 2c 3s 5d").handRank_ == ClassifiedHand::Pair);
+            CHECK(ClassifiedHand::fromString("Qh Qd 2c 2s 5d").handRank_ == ClassifiedHand::TwoPair);
+            CHECK(ClassifiedHand::fromString("Qh Qd Jc Js 6d").handRank_ == ClassifiedHand::TwoPair);
+            CHECK(ClassifiedHand::fromString("Ah Ad 2c 2s 5d").handRank_ == ClassifiedHand::TwoPair);
+            CHECK(ClassifiedHand::fromString("Ah 2d 2c 2s 5d").handRank_ == ClassifiedHand::Trips);
+            CHECK(ClassifiedHand::fromString("Ah Ad Ac 2s 5d").handRank_ == ClassifiedHand::Trips);
+            CHECK(ClassifiedHand::fromString("Ah Ad Ac 3s 5d").handRank_ == ClassifiedHand::Trips);
+            CHECK(ClassifiedHand::fromString("Ah 2d 3c 4s 5d").handRank_ == ClassifiedHand::Straight);
+            CHECK(ClassifiedHand::fromString("2d 3c 4s 5d 6c").handRank_ == ClassifiedHand::Straight);
+            CHECK(ClassifiedHand::fromString("Ah 2h Kh 4h 5h").handRank_ == ClassifiedHand::Flush);
+            CHECK(ClassifiedHand::fromString("Ah 2h Kh 6h 5h").handRank_ == ClassifiedHand::Flush);
+            CHECK(ClassifiedHand::fromString("5h 2d 2c 2s 5d").handRank_ == ClassifiedHand::FullHouse);
+            CHECK(ClassifiedHand::fromString("6h 2d 2c 2s 6d").handRank_ == ClassifiedHand::FullHouse);
+            CHECK(ClassifiedHand::fromString("5h 3d 3c 3s 5d").handRank_ == ClassifiedHand::FullHouse);
+            CHECK(ClassifiedHand::fromString("5h 2d 2c 2s 2h").handRank_ == ClassifiedHand::Quads);
+            CHECK(ClassifiedHand::fromString("5h 3d 3c 3s 3h").handRank_ == ClassifiedHand::Quads);
+            CHECK(ClassifiedHand::fromString("Ah 2h 3h 4h 5h").handRank_ == ClassifiedHand::StraightFlush);
+            CHECK(ClassifiedHand::fromString("2h 3h 4h 5h 6h").handRank_ == ClassifiedHand::StraightFlush);
+            CHECK(ClassifiedHand::fromString("Th Jh Qh Kh Ah").handRank_ == ClassifiedHand::StraightFlush);
+    }
+    SECTION("HandsSorted") {
         std::vector<ClassifiedHand> hands{
             ClassifiedHand::fromString("Kh Td 2c 3s 5d"),
             ClassifiedHand::fromString("Ah Td 2c 3s 5d"),

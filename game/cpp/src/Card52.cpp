@@ -76,28 +76,28 @@ Suit getSuit(char c)
 }
 
 Card52::Card52(Rank52 rank, Suit suit)
-    : nb_(rank*suit)
+    : rank_(rank) , suit_(suit)
 {}
 
 Card52::Card52(std::string const& card)
-    : nb_(int(getRank(card[0]))*int(getSuit(card[1])))
+    : rank_(getRank(card[0])) , suit_(getSuit(card[1]))
 {}
 
 Card52::Card52(int nb)
-    : nb_(nb)
+    : rank_(Rank52(nb % 13)), suit_(Suit(nb / 13))
 {
-    if(nb_ < 0 or nb_ > 51)
-        throw std::runtime_error("Card52 out of range: " + std::to_string(nb_) );
+    if(nb < 0 or nb > 51)
+        throw std::runtime_error("Card52 out of range: " + std::to_string(nb) );
 }
     
 Rank52 Card52::rank() const
 {
-    return Rank52(nb_ / 4);
+    return rank_;
 }
 
 Suit Card52::suit() const
 {
-    return Suit(nb_ % 4);
+    return suit_;
 }
 
 std::string Card52::to_string() const

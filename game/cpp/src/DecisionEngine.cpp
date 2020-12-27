@@ -13,7 +13,12 @@ BettingAction DecisionEngine::decide([[maybe_unused]] Pot const& pot,
     std::optional<BettingAction> action = handHistory.getLastBet(board.street());
     if(action)
     {
-        action->nextBet = 0;
+        action->previousBet = action->nextBet;
+        switch( rand() % 3){
+            case 0: action->nextBet = 0; break;// check or fold
+            case 1: action->nextBet = action->previousBet; break;
+            case 2: action->nextBet = action->previousBet + action->previousBet; break;
+        }
         return *action;
     }
     return BettingAction(board.street());

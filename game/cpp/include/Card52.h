@@ -46,8 +46,10 @@ class Card52{
         Suit suit() const;
         int nb() const;
         std::string to_string() const;
+        friend constexpr auto operator<=>(Card52 const& l, Card52 const& r) = default;
     private:    
-        int nb_ = 0;
+        Rank52 rank_;
+        Suit suit_;
 };
 
 }

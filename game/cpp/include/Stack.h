@@ -24,5 +24,6 @@ struct Stack{
 };
 
 Stack operator-(Stack left, Stack right);
+Stack operator+(Stack left, Stack right);
 
 }

@@ -32,9 +32,17 @@ std::string Stack::toString() const
     return std::to_string(amount_);
 }
 
-Stack operator-(Stack left, Stack right){
+Stack operator-(Stack left, Stack right)
+{
     Stack ret = left;
     ret -= right;
+    return ret;
+}
+
+Stack operator+(Stack left, Stack right)
+{
+    Stack ret = left;
+    ret += right;
     return ret;
 }
 

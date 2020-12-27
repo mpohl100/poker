@@ -45,7 +45,7 @@ ClassifiedHand::ClassifiedHand(std::vector<Card52>::iterator begin, std::vector<
         auto compare = [](const auto& l, const auto& r){ return l.rank() < r.rank();};
         auto minRank = *std::min_element(cards_.begin(), cards_.end(), compare);
         auto maxRank = *std::max_element(cards_.begin(), cards_.end(), compare);
-        bool isStraight = (maxRank.rank() - minRank.rank()) == 5;
+        bool isStraight = (maxRank.rank() - minRank.rank()) == 4;
 
         // check for wheel (A,2,3,4,5)
         auto compareWheel = [](const auto& l, const auto& r){ 
@@ -59,16 +59,16 @@ ClassifiedHand::ClassifiedHand(std::vector<Card52>::iterator begin, std::vector<
         };
         minRank = *std::min_element(cards_.begin(), cards_.end(), compareWheel);
         maxRank = *std::max_element(cards_.begin(), cards_.end(), compareWheel);
-        isStraight = minRank.rank() == Ace and maxRank.rank() == Five;
+        bool isWheel = minRank.rank() == Ace and maxRank.rank() == Five;
 
         // set the handrank
-        if(not isStraight and not isFlush)
+        if(not isWheel and not isStraight and not isFlush)
             handRank_ = HighCard;
-        if(isStraight)
+        if(isStraight or isWheel)
             handRank_ = Straight;
         if(isFlush)
             handRank_ = Flush;
-        if(isStraight and isFlush)
+        if((isStraight or isWheel) and isFlush)
             handRank_ = StraightFlush;
     }
     else // Pair, TwoPair, Trips, FullHouse or Quads

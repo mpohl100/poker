@@ -35,7 +35,16 @@ void Nlhe52::playHand()
     Pot pot;
     Board board;
     HandHistory handHistory;
+    BettingAction sbAction(Preflop);
+    sbAction.player.reset(&smallBlindPlayer());
+    sbAction.nextBet = smallBlind;
+    handHistory.logAction(std::make_unique<BettingAction>(sbAction));
     pot.putAmount(smallBlindPlayer().getAmount(smallBlind));
+    BettingAction bbAction(Preflop);
+    bbAction.player.reset(&bigBlindPlayer());
+    bbAction.previousBet = smallBlind;
+    bbAction.nextBet = bigBlind;
+    handHistory.logAction(std::make_unique<BettingAction>(bbAction));
     pot.putAmount(bigBlindPlayer().getAmount(bigBlind));
 
     // deal hands
@@ -109,7 +118,7 @@ bool Nlhe52::ready(Stack currentBet, Board const& board, HandHistory const& hand
     return std::all_of(players_.begin(), players_.end(), 
                          [currentBet, &board, &handHistory](auto const& p){ 
                                 bool ready = p.ready(currentBet, board, handHistory);
-                                std::cout << "ready\n";
+                                std::cout << "ready=" << ready << "\n";
                                 return ready;
                              });
 }
