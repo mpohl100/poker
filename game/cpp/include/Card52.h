@@ -45,7 +45,7 @@ class Card52{
         Rank52 rank() const;
         Suit suit() const;
         int nb() const;
-        std::string to_string() const;
+        std::string toString() const;
         friend constexpr auto operator<=>(Card52 const& l, Card52 const& r) = default;
     private:    
         Rank52 rank_;

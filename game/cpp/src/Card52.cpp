@@ -100,7 +100,7 @@ Suit Card52::suit() const
     return suit_;
 }
 
-std::string Card52::to_string() const
+std::string Card52::toString() const
 {
     std::string s;
     Rank52 r = rank();

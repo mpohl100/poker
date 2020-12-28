@@ -18,7 +18,7 @@ private:
     Player& smallBlindPlayer();
     Player& bigBlindPlayer();
     bool ready(Stack currentBet, Board const& board, HandHistory const& handHistory);
-    bool playRound(int starting_pos, Stack currentBet, Board const& board, HandHistory& HandHistory, Pot& pot);
+    bool playRound(size_t starting_pos, Pot& pot, Board const& board, HandHistory& HandHistory);
 
     Deck52 deck_;
     size_t dealer_ = 0;

@@ -22,9 +22,10 @@ std::string toString(Position pos)
     return "Unknown Position";
 }
 
-Player::Player(Stack stack, DecisionEngine const& engine)
+Player::Player(Stack stack, DecisionEngine const& engine, int nb)
     : stack_(stack)
     , engine_(engine)
+    , nb_(nb)
 {}
 
 Stack Player::getAmount(Stack amt)
@@ -53,23 +54,24 @@ HoleCards Player::getHoleCards() const
     return holeCards_;
 }
 
-Stack Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
+DecisionEngine::Decision 
+Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
 {
-    BettingAction next = engine_.decide(pot, board, handHistory);
+    auto[ next, decision ] = engine_.decide(pot, board, handHistory, *this);
     handHistory.logAction(std::make_unique<BettingAction>(next));
     if(next.nextBet == 0)
     {
         // only fold, if it has been bet before
-        if(next.previousBet > 0)
+        if(decision == DecisionEngine::Decision::Fold)
             holeCards_ = {};
     }
     else
     {
-        // bet,call or raise
-        pot.putAmount(next.nextBet);
-        getAmount(next.nextBet);
+        // book bet,call or raise
+        pot.putAmount(next.nextBet-next.previousBet);
+        getAmount(next.nextBet-next.previousBet);
     }
-    return next.nextBet;
+    return decision;
 }
 
 bool Player::ready(Stack currentBet, Board const& board, HandHistory const& handHistory) const
@@ -162,6 +164,16 @@ Position Player::getPosition() const
         default: throw std::runtime_error("wrong position indeces: index " + std::to_string(pos_.first) + " size " + std::to_string(pos_.second) );
     }
     return Position::Button;
+}
+
+Stack Player::getStack() const
+{
+    return stack_;
+}
+
+int Player::getNumber() const
+{
+    return nb_;
 }
 
 }

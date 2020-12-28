@@ -16,7 +16,7 @@ class Deck52{
         Deck52& operator=(Deck52&&) = default;
 
         void shuffle();
-        std::string to_string() const;
+        std::string toString() const;
         HoleCards getHoleCards();
         std::vector<Card52> getFlop();
         Card52 getCard();

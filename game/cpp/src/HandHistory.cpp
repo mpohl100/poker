@@ -29,7 +29,6 @@ std::optional<BettingAction> HandHistory::getLastBet(Street street, const Player
     if(lastBet != std::ranges::end(bets))
     {
         auto bet = *dynamic_cast<BettingAction*>((*lastBet).get());
-        std::cout << bet.previousBet.amount_ << ' ' << bet.nextBet.amount_ << '\n';
         return bet;
     }
     return std::nullopt;

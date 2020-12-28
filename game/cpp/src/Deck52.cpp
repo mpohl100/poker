@@ -19,11 +19,11 @@ void Deck52::shuffle()
     position_ = 0;
 }
 
-std::string Deck52::to_string() const
+std::string Deck52::toString() const
 {
     std::string s;
     for( const auto& card : cards_)
-        s += card.to_string() + " ";
+        s += card.toString() + " ";
     return s;
 }
 

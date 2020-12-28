@@ -13,8 +13,16 @@ enum Street{
     River,
 };
 
+std::string toString(Street street);
+
 class Board{
     public:
+        Board() = default;
+        Board(Board const&) = default;
+        Board& operator=(Board const&) = default;
+        Board(Board&&) = default;
+        Board& operator=(Board&&) = default;
+        
         Street street() const;
         void dealFlop(std::vector<Card52> const& flop);
         void dealTurn(Card52 turn);

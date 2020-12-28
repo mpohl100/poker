@@ -27,7 +27,7 @@ std::string toString(Position pos);
 
 class Player{
     public:
-        Player(Stack stack, DecisionEngine const& engine);
+        Player(Stack stack, DecisionEngine const& engine, int nb);
         Player() = default;
         Player(Player const&) = default;
         Player& operator=(Player const&) = default;
@@ -39,15 +39,18 @@ class Player{
         void dealHoleCards(HoleCards const&);
         bool hasHoleCards() const;
         HoleCards getHoleCards() const;
-        Stack decide(Pot& pot, Board const& board, HandHistory& handHistory);
+        DecisionEngine::Decision decide(Pot& pot, Board const& board, HandHistory& handHistory);
         bool ready(Stack currentBet, Board const& board, HandHistory const& handHistory) const;
         void setPlayerIndex(int index, size_t size);
         Position getPosition() const;
+        Stack getStack() const;
+        int getNumber() const;
     private:
         Stack stack_;
         DecisionEngine engine_;
         HoleCards holeCards_;
         std::pair<int, size_t> pos_{0,2}; // to deduce the position;
+        int nb_;
 };
 
 }

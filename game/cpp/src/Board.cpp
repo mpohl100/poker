@@ -14,6 +14,16 @@ Street Board::street() const
     return Preflop;
 }
 
+std::string toString(Street street){
+    switch (street)
+    {
+        case Preflop: return "*** HOLE CARDS ***";
+        case Flop: return "*** FLOP ***";
+        case Turn: return "*** TURN ***";
+        case River: return "*** RIVER ***";
+    };
+    return "Unknown Cards";
+}
 
 void Board::dealFlop(std::vector<Card52> const& flop)
 {
