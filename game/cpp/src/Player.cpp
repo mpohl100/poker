@@ -58,12 +58,12 @@ HoleCards Player::getHoleCards() const
 Decision 
 Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
 {
-    auto[ next, decision ] = engine_->decide(pot, board, handHistory, *this);
+    BettingAction next = engine_->decide(pot, board, handHistory, *this);
     handHistory.logAction(std::make_unique<BettingAction>(next));
     if(next.nextBet == 0)
     {
         // only fold, if it has been bet before
-        if(decision == Decision::Fold)
+        if(next.decision == Decision::Fold)
             holeCards_ = {};
     }
     else
@@ -72,7 +72,7 @@ Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
         pot.putAmount(next.nextBet-next.previousBet);
         getAmount(next.nextBet-next.previousBet);
     }
-    return decision;
+    return next.decision;
 }
 
 bool Player::ready(Stack currentBet, Board const& board, HandHistory const& handHistory) const

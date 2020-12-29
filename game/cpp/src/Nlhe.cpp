@@ -46,22 +46,26 @@ void Nlhe52::playHand()
     for(auto& player : players_){
         SeatingAction seatingAction;
         seatingAction.player = player;
-        seatingAction.startingStack = player.getStack();
         handHistory.logAction(std::make_unique<SeatingAction>(seatingAction));
     }
     // post blinds and antes
     Pot pot;
     Board board;
+
     BettingAction sbAction(Preflop);
+    pot.putAmount(smallBlindPlayer().getAmount(smallBlind));
     sbAction.player = smallBlindPlayer();
     sbAction.nextBet = smallBlind;
+    sbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(sbAction));
-    pot.putAmount(smallBlindPlayer().getAmount(smallBlind));
+
     BettingAction bbAction(Preflop);
+    pot.putAmount(bigBlindPlayer().getAmount(bigBlind));
     bbAction.player = bigBlindPlayer();
     bbAction.nextBet = bigBlind;
+    bbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(bbAction));
-    pot.putAmount(bigBlindPlayer().getAmount(bigBlind));
+
 
     BoardAction preflopAction;
     preflopAction.board = board;
@@ -137,15 +141,15 @@ void Nlhe52::playHand()
 Player& Nlhe52::smallBlindPlayer()
 {
     if(players_.size() == 2)
-        return players_[0];
-    return players_[1];
+        return playersInHand_[0];
+    return playersInHand_[1];
 }
 
 Player& Nlhe52::bigBlindPlayer()
 {
     if(players_.size() == 2)
-        return players_[1];
-    return players_[2];
+        return playersInHand_[1];
+    return playersInHand_[2];
 }
 
 bool Nlhe52::ready(Stack currentBet, Board const& board, HandHistory const& handHistory)
@@ -172,8 +176,8 @@ bool Nlhe52::playRound(size_t starting_pos, Pot& pot, Board const& board, HandHi
             if(decision == Decision::Raise)
             {
                 newRaiser = true;
-                firstToAsk = nb+1;
-                if(firstToAsk > playersInHand_.size())
+                firstToAsk += nb + 1;
+                if(firstToAsk >= playersInHand_.size())
                     firstToAsk -= playersInHand_.size();
                 break;
             }

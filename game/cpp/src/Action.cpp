@@ -7,19 +7,22 @@
 
 namespace game52 {
 
-BettingAction::BettingAction(Street street) 
-    : street(street) 
+BettingAction::BettingAction(Street street)  
+    : decision(Decision::Check)
+    , street(street)
 {}
 
 std::string BettingAction::toString() const
 {
     std::string ret = game52::toString(player.getPosition()); 
-    if( nextBet == 0)
+    if( decision == Decision::Fold)
         ret += " folds.";
-    else if( nextBet == previousBet )
-        ret += " calls " + nextBet.toString() + ".";
+    else if( decision == Decision::Check )
+        ret += " checks.";
+    else if( decision == Decision::Call )
+        ret += " calls " + (toCall-previousBet).toString() + "."; 
     else
-        ret += " raises " + (nextBet - previousBet).toString() + " to " + nextBet.toString() + ".";
+        ret += " raises " + (nextBet - toCall).toString() + " to " + nextBet.toString() + ".";
     return ret;
 }
 
@@ -49,7 +52,7 @@ std::string SeatingAction::toString() const
 {
     return "Seat " + std::to_string(player.getNumber()) + ": " 
         + game52::toString(player.getPosition()) 
-        + " (" + startingStack.toString() + " in chips)"  ;
+        + " (" + player.getStack().toString() + " in chips)"  ;
 }
 
 std::string ShowdownAction::toString() const

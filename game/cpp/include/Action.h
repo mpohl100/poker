@@ -33,6 +33,8 @@ public:
     std::string toString() const override;
     Stack previousBet = 0;
     Stack nextBet = 0;
+    Stack toCall = 0;
+    Decision decision;
     Street street;
 };
 
@@ -72,7 +74,6 @@ public:
     SeatingAction(SeatingAction&&) = default;
     SeatingAction& operator=(SeatingAction&&) = default;
     std::string toString() const override;
-    Stack startingStack;
 };
 
 class ShowdownAction : public HandAction{

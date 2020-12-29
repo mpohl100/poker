@@ -13,8 +13,7 @@ class Player;
 
 class DecisionEngine{
 public:
-    std::pair<BettingAction, Decision> 
-    decide(Pot const& pot, Board const& board, HandHistory& handHistory, Player& hero);
+    BettingAction decide(Pot const& pot, Board const& board, HandHistory& handHistory, Player& hero);
 };
 
 }
