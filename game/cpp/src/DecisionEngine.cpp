@@ -6,7 +6,7 @@
 
 namespace game52{
 
-std::pair<BettingAction, DecisionEngine::Decision>
+std::pair<BettingAction, Decision>
 DecisionEngine::decide( Pot const& pot, 
                         Board const& board, 
                         HandHistory& handHistory,
@@ -14,12 +14,12 @@ DecisionEngine::decide( Pot const& pot,
 {    
     std::optional<BettingAction> lastAction = handHistory.getLastBet(board.street());
     std::optional<BettingAction> lastHeroAction = handHistory.getLastBet(board.street(), &hero);
-    DecisionEngine::Decision decision;
+    Decision decision;
     // hero is opening the action of the street, options are check or raise
     if(not lastAction)
     {
         BettingAction openAction(board.street());
-        openAction.player.reset(&hero);
+        openAction.player = hero;
         openAction.previousBet = 0;
         switch(rand() % 2){
             case 0: openAction.nextBet = 0; decision = Decision::Check; break;
@@ -32,7 +32,7 @@ DecisionEngine::decide( Pot const& pot,
         if(not lastHeroAction) // we are acting for the first time in the hand
         {
             BettingAction nextAction(board.street());
-            nextAction.player.reset(&hero);
+            nextAction.player = hero;
             if(lastAction->nextBet == 0) // it has been checked to us
             {
                 nextAction.previousBet = 0;
@@ -55,7 +55,7 @@ DecisionEngine::decide( Pot const& pot,
         else
         {   // we are acting a second time 
             BettingAction nextAction(board.street());
-            nextAction.player.reset(&hero);
+            nextAction.player = hero;
             nextAction.previousBet = lastHeroAction->nextBet;
             switch( rand() % 3){
                 case 0: nextAction.nextBet = 0; decision = Decision::Fold; break;

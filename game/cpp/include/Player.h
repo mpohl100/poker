@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Action.h"
 #include "HoleCards.h"
 #include "Stack.h"
-#include "DecisionEngine.h"
+
+#include <memory>
 
 namespace game52{
 
 class Pot;
 class Board;
 class HandHistory;
+class DecisionEngine;
 
 enum class Position{
     UTG,
@@ -21,6 +22,13 @@ enum class Position{
     Button,
     SmallBlind,
     BigBlind,
+};
+
+enum class Decision{
+    Fold,
+    Check,
+    Call,
+    Raise,
 };
 
 std::string toString(Position pos);
@@ -39,7 +47,7 @@ class Player{
         void dealHoleCards(HoleCards const&);
         bool hasHoleCards() const;
         HoleCards getHoleCards() const;
-        DecisionEngine::Decision decide(Pot& pot, Board const& board, HandHistory& handHistory);
+        Decision decide(Pot& pot, Board const& board, HandHistory& handHistory);
         bool ready(Stack currentBet, Board const& board, HandHistory const& handHistory) const;
         void setPlayerIndex(int index, size_t size);
         Position getPosition() const;
@@ -47,7 +55,7 @@ class Player{
         int getNumber() const;
     private:
         Stack stack_;
-        DecisionEngine engine_;
+        std::shared_ptr<DecisionEngine> engine_;
         HoleCards holeCards_;
         std::pair<int, size_t> pos_{0,2}; // to deduce the position;
         int nb_;

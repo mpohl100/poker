@@ -22,10 +22,11 @@ Nlhe52::Nlhe52(int nb_players)
 }
 
 template<class T>
-auto offset(std::vector<T> const& rng, size_t offset)
+auto offset(std::vector<T> const& rng, size_t offset, size_t N = 0)
 { 
-    size_t N = ranges::size(rng);
-    if(offset >= N)
+    if(N == 0)
+        N = ranges::size(rng);
+    if(offset > N)
         throw std::runtime_error("wrong offset in offset range creation: " + std::to_string(offset));
     return rng | ranges::view::cycle | ranges::view::take(N+offset) | ranges::view::drop(offset);
 }
@@ -44,7 +45,7 @@ void Nlhe52::playHand()
     HandHistory handHistory;
     for(auto& player : players_){
         SeatingAction seatingAction;
-        seatingAction.player.reset(&player);
+        seatingAction.player = player;
         seatingAction.startingStack = player.getStack();
         handHistory.logAction(std::make_unique<SeatingAction>(seatingAction));
     }
@@ -52,12 +53,12 @@ void Nlhe52::playHand()
     Pot pot;
     Board board;
     BettingAction sbAction(Preflop);
-    sbAction.player.reset(&smallBlindPlayer());
+    sbAction.player = smallBlindPlayer();
     sbAction.nextBet = smallBlind;
     handHistory.logAction(std::make_unique<BettingAction>(sbAction));
     pot.putAmount(smallBlindPlayer().getAmount(smallBlind));
     BettingAction bbAction(Preflop);
-    bbAction.player.reset(&bigBlindPlayer());
+    bbAction.player = bigBlindPlayer();
     bbAction.nextBet = bigBlind;
     handHistory.logAction(std::make_unique<BettingAction>(bbAction));
     pot.putAmount(bigBlindPlayer().getAmount(bigBlind));
@@ -71,7 +72,7 @@ void Nlhe52::playHand()
         HoleCards holeCards = deck_.getHoleCards();  
         player.get().dealHoleCards(holeCards);
         DealingAction dealingAction;
-        dealingAction.player.reset(&player.get());
+        dealingAction.player = player.get();
         dealingAction.holeCards = holeCards;
         handHistory.logAction(std::make_unique<DealingAction>(dealingAction));
     }
@@ -158,16 +159,17 @@ bool Nlhe52::ready(Stack currentBet, Board const& board, HandHistory const& hand
 
 bool Nlhe52::playRound(size_t starting_pos, Pot& pot, Board const& board, HandHistory& handHistory)
 {
+    size_t firstToAsk = starting_pos;
+    size_t N = playersInHand_.size();
     while(true){
-        size_t firstToAsk = starting_pos;
         bool newRaiser = false;
         size_t nb = 0;
-        for(auto& player : offset(playersInHand_, firstToAsk))
+        for(auto& player : offset(playersInHand_, firstToAsk, N))
         {
             if( not player.get().hasHoleCards() )
                 continue;
-            DecisionEngine::Decision decision = player.get().decide(pot, board, handHistory);
-            if(decision == DecisionEngine::Decision::Raise)
+            Decision decision = player.get().decide(pot, board, handHistory);
+            if(decision == Decision::Raise)
             {
                 newRaiser = true;
                 firstToAsk = nb+1;
@@ -177,6 +179,7 @@ bool Nlhe52::playRound(size_t starting_pos, Pot& pot, Board const& board, HandHi
             }
             nb++;
         }
+        N = playersInHand_.size() - 1;
         if(not newRaiser)
             break;
     }

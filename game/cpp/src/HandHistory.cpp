@@ -10,7 +10,7 @@ void HandHistory::logAction(std::unique_ptr<HandAction> handAction)
     actions_.push_back(std::move(handAction));
 }
 
-std::optional<BettingAction> HandHistory::getLastBet(Street street, const Player* player) const
+std::optional<BettingAction> HandHistory::getLastBet(Street street, Player const* player) const
 {
     auto bets = actions_ 
                         | std::ranges::views::reverse 
@@ -20,7 +20,7 @@ std::optional<BettingAction> HandHistory::getLastBet(Street street, const Player
                             {
                                 if(not player)
                                     return bet->street == street;
-                                return bet->street == street and bet->player.get() == player;
+                                return bet->street == street and bet->player.getNumber() == player->getNumber();
                             }
                             return false;
                         })

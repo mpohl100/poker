@@ -58,7 +58,7 @@ Rank52 getRank(char c)
         case 'Q': return Queen;
         case 'K': return King;
         case 'A': return Ace;
-        default: throw std::runtime_error("wrong input rank: " + c); 
+        default: throw std::runtime_error("wrong input rank: " + std::to_string(c)); 
     }
     return Deuce;
 }
@@ -70,7 +70,7 @@ Suit getSuit(char c)
         case 'd': return Diamonds;
         case 's': return Spades;
         case 'c': return Clubs;
-        default: throw std::runtime_error("wrong input suit: " + c);
+        default: throw std::runtime_error("wrong input suit: " + std::to_string(c));
     }
     return Hearts;
 }

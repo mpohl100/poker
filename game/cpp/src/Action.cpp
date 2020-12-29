@@ -13,7 +13,7 @@ BettingAction::BettingAction(Street street)
 
 std::string BettingAction::toString() const
 {
-    std::string ret = game52::toString(player->getPosition()); 
+    std::string ret = game52::toString(player.getPosition()); 
     if( nextBet == 0)
         ret += " folds.";
     else if( nextBet == previousBet )
@@ -25,7 +25,7 @@ std::string BettingAction::toString() const
 
 std::string DealingAction::toString() const
 {
-    return "dealt to " + game52::toString(player->getPosition()) + " [" + holeCards.toString() + "]";
+    return "dealt to " + game52::toString(player.getPosition()) + " [" + holeCards.toString() + "]";
 }
 
 std::string BoardAction::toString() const
@@ -47,8 +47,8 @@ std::string BoardAction::toString() const
 
 std::string SeatingAction::toString() const
 {
-    return "Seat " + std::to_string(player->getNumber()) + ": " 
-        + game52::toString(player->getPosition()) 
+    return "Seat " + std::to_string(player.getNumber()) + ": " 
+        + game52::toString(player.getPosition()) 
         + " (" + startingStack.toString() + " in chips)"  ;
 }
 

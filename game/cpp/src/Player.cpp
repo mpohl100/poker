@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "HandHistory.h"
 #include "Pot.h"
+#include "DecisionEngine.h"
 
 #include <iostream>
 
@@ -24,7 +25,7 @@ std::string toString(Position pos)
 
 Player::Player(Stack stack, DecisionEngine const& engine, int nb)
     : stack_(stack)
-    , engine_(engine)
+    , engine_(std::make_shared<DecisionEngine>(engine))
     , nb_(nb)
 {}
 
@@ -54,15 +55,15 @@ HoleCards Player::getHoleCards() const
     return holeCards_;
 }
 
-DecisionEngine::Decision 
+Decision 
 Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
 {
-    auto[ next, decision ] = engine_.decide(pot, board, handHistory, *this);
+    auto[ next, decision ] = engine_->decide(pot, board, handHistory, *this);
     handHistory.logAction(std::make_unique<BettingAction>(next));
     if(next.nextBet == 0)
     {
         // only fold, if it has been bet before
-        if(decision == DecisionEngine::Decision::Fold)
+        if(decision == Decision::Fold)
             holeCards_ = {};
     }
     else

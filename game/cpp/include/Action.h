@@ -3,24 +3,28 @@
 #include "Stack.h"
 #include "Board.h"
 #include "HoleCards.h"
-
-#include <memory>
+#include "Player.h"
 
 namespace game52{
 
-class Player;
-
 class HandAction{
 public:
+    HandAction() = default;
+    virtual ~HandAction() = default;
+    HandAction(HandAction const&) = default;
+    HandAction& operator=(HandAction const&) = default;
+    HandAction(HandAction&&) = default;
+    HandAction& operator=(HandAction&&) = default;
+
     virtual std::string toString() const = 0;    
-    
-    std::shared_ptr<Player> player;
+    game52::Player player;
 };
 
 class BettingAction : public HandAction{
 public: 
     BettingAction(Street street);
     BettingAction() = default;
+    virtual ~BettingAction() = default;
     BettingAction(BettingAction const&) = default;
     BettingAction& operator=(BettingAction const&) = default;
     BettingAction(BettingAction&&) = default;
@@ -36,6 +40,7 @@ class DealingAction : public HandAction{
 public:
     DealingAction(HoleCards const& holeCards);
     DealingAction() = default;
+    virtual ~DealingAction() = default;
     DealingAction(DealingAction const&) = default;
     DealingAction& operator=(DealingAction const&) = default;
     DealingAction(DealingAction&&) = default;
@@ -48,6 +53,7 @@ public:
 class BoardAction : public HandAction{
 public:
     BoardAction() = default;
+    virtual ~BoardAction() = default;
     BoardAction(BoardAction const&) = default;
     BoardAction& operator=(BoardAction const&) = default;
     BoardAction(BoardAction&&) = default;
@@ -60,6 +66,7 @@ public:
 class SeatingAction : public HandAction{
 public:
     SeatingAction() = default;
+    virtual ~SeatingAction() = default;
     SeatingAction(SeatingAction const&) = default;
     SeatingAction& operator=(SeatingAction const&) = default;
     SeatingAction(SeatingAction&&) = default;

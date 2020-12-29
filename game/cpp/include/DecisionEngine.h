@@ -13,12 +13,6 @@ class Player;
 
 class DecisionEngine{
 public:
-    enum class Decision{
-        Fold,
-        Check,
-        Call,
-        Raise,
-    };
     std::pair<BettingAction, Decision> 
     decide(Pot const& pot, Board const& board, HandHistory& handHistory, Player& hero);
 };
