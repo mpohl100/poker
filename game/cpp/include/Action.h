@@ -4,11 +4,13 @@
 #include "Board.h"
 #include "HoleCards.h"
 #include "Player.h"
+#include "Hand.h"
 
 namespace game52{
 
 class HandAction{
 public:
+    HandAction(Player const& player);
     HandAction() = default;
     virtual ~HandAction() = default;
     HandAction(HandAction const&) = default;
@@ -22,7 +24,7 @@ public:
 
 class BettingAction : public HandAction{
 public: 
-    BettingAction(Street street);
+    BettingAction(Player const& player, Street street);
     BettingAction() = default;
     virtual ~BettingAction() = default;
     BettingAction(BettingAction const&) = default;
@@ -78,7 +80,14 @@ public:
 
 class ShowdownAction : public HandAction{
 public:
+    ShowdownAction(Player const& player, std::optional<Hand> const& hand);
+    ShowdownAction() = default;
+    ShowdownAction(ShowdownAction const&) = default;
+    ShowdownAction& operator=(ShowdownAction const&) = default;
+    ShowdownAction(ShowdownAction&&) = default;
+    ShowdownAction& operator=(ShowdownAction&&) = default;
     std::string toString() const override;
+    std::optional<Hand> hand;
 };
 
 class SummaryAction : public HandAction{

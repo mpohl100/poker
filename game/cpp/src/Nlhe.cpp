@@ -52,16 +52,14 @@ void Nlhe52::playHand()
     Pot pot;
     Board board;
 
-    BettingAction sbAction(Preflop);
+    BettingAction sbAction(smallBlindPlayer(), Preflop);
     pot.putAmount(smallBlindPlayer().getAmount(smallBlind));
-    sbAction.player = smallBlindPlayer();
     sbAction.nextBet = smallBlind;
     sbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(sbAction));
 
-    BettingAction bbAction(Preflop);
+    BettingAction bbAction(bigBlindPlayer(),Preflop);
     pot.putAmount(bigBlindPlayer().getAmount(bigBlind));
-    bbAction.player = bigBlindPlayer();
     bbAction.nextBet = bigBlind;
     bbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(bbAction));
@@ -84,7 +82,7 @@ void Nlhe52::playHand()
     // pre-flop play
     // only with 4 players or more UTG gets to act first, otherwise the dealer always acts first.
     size_t firstToAct = players_.size() > 3 ? 3 : 0;
-    if(bool finished = playRound(firstToAct, pot, board, handHistory); finished)
+    if(auto[ finished, lastRaiser] = playRound(firstToAct, pot, board, handHistory); finished)
     {
         std::cout << handHistory.toString() << '\n';
         return;
@@ -97,7 +95,7 @@ void Nlhe52::playHand()
     handHistory.logAction(std::make_unique<BoardAction>(flopAction));
 
 
-    if(bool finished = playRound(1, pot, board, handHistory); finished)
+    if(auto[ finished, lastRaiser] = playRound(1, pot, board, handHistory); finished)
     {
         std::cout << handHistory.toString() << '\n';
         return;
@@ -109,7 +107,7 @@ void Nlhe52::playHand()
     turnAction.board = board;
     handHistory.logAction(std::make_unique<BoardAction>(turnAction));
 
-    if(bool finished = playRound(1, pot, board, handHistory); finished)
+    if(auto[ finished, lastRaiser] = playRound(1, pot, board, handHistory); finished)
     {
         std::cout << handHistory.toString() << '\n';
         return;
@@ -121,20 +119,38 @@ void Nlhe52::playHand()
     riverAction.board = board;
     handHistory.logAction(std::make_unique<BoardAction>(riverAction));
 
-    if(bool finished = playRound(1, pot, board, handHistory); finished)
+    if(auto[ finished, lastRaiser] = playRound(1, pot, board, handHistory); finished)
     {
         std::cout << handHistory.toString() << '\n';
         return;
     }
-
-    // show down
-    std::vector<Hand> hands;
-    for(auto& player : playersInHand_ | ranges::view::filter([](const auto& p){ return p.get().hasHoleCards();}))
-        hands.push_back(Hand(&player.get(), player.get().getHoleCards(), board));
-    std::sort(hands.begin(), hands.end(), [](const auto& l, const auto& r){ return compareHands(l,r) == 1;});
-    Stack amount = pot.getAmount();
-    hands[0].player_->putAmount(amount);
-
+    else
+    {
+        // show down
+        std::optional<std::pair<Hand, std::vector<Player*>>> currentWinner;
+        auto players = offset(playersInHand_, lastRaiser);
+        for(auto& player : players | ranges::view::filter([](const auto& p){ return p.get().hasHoleCards();}))
+        {
+            if( not currentWinner)
+            {
+                Hand firstHand = Hand(player.get().getHoleCards(), board);
+                currentWinner = std::pair{ firstHand, std::vector{&player.get()} };
+            }
+            else
+            {
+                Hand newHand(player.get().getHoleCards(), board);
+                int result = compareHands(newHand, currentWinner->first);
+                switch(result){
+                    case 1: currentWinner = std::pair{newHand, std::vector{&player.get()}}; break;
+                    case 0: currentWinner->second.push_back(&player.get()); break;
+                    case -1: break; // do nothing 
+                }
+            }
+        }
+        for(const auto& player : currentWinner->second){
+            player->putAmount( pot.getAmount() / int(currentWinner->second.size()));
+        }
+    }
     std::cout << handHistory.toString() << '\n';
 }
 
@@ -161,7 +177,8 @@ bool Nlhe52::ready(Stack currentBet, Board const& board, HandHistory const& hand
                              });
 }
 
-bool Nlhe52::playRound(size_t starting_pos, Pot& pot, Board const& board, HandHistory& handHistory)
+std::pair<bool,int> 
+Nlhe52::playRound(size_t starting_pos, Pot& pot, Board const& board, HandHistory& handHistory)
 {
     size_t firstToAsk = starting_pos;
     size_t N = playersInHand_.size();
@@ -187,14 +204,17 @@ bool Nlhe52::playRound(size_t starting_pos, Pot& pot, Board const& board, HandHi
         if(not newRaiser)
             break;
     }
+    int raiser = firstToAsk - 1;
+    if(raiser < 0)
+        raiser += int(playersInHand_.size());
     // if only one player has hole cards after the betting round, the hand is finished
     if(std::count_if(players_.begin(), players_.end(), [](const auto& p){ return p.hasHoleCards();}) == 1)
     {
         auto it = std::find_if(players_.begin(), players_.end(),[](const auto& p){return p.hasHoleCards();} );
         it->putAmount(pot.get());
-        return true; // hand finished
+        return {true, raiser}; // hand finished
     }
-    return false;
+    return {false, raiser};
 }
 
 }

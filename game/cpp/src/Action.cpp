@@ -7,8 +7,14 @@
 
 namespace game52 {
 
-BettingAction::BettingAction(Street street)  
-    : decision(Decision::Check)
+HandAction::HandAction(Player const& player)
+    : player(player)
+{}
+
+
+BettingAction::BettingAction(Player const& player, Street street)  
+    : HandAction(player) 
+    , decision(Decision::Check)
     , street(street)
 {}
 
@@ -55,9 +61,16 @@ std::string SeatingAction::toString() const
         + " (" + player.getStack().toString() + " in chips)"  ;
 }
 
+ShowdownAction::ShowdownAction(Player const& player, std::optional<Hand> const& hand)
+    : HandAction(player)
+    , hand(hand)
+{}
+
 std::string ShowdownAction::toString() const
 {
-    return "";
+    if(not hand)
+        return player.getName() + " mucks.";
+    return player.getName() + " shows [" + hand->getHoleCards().toString() + "], " + hand->toString();
 }
 
 std::string SummaryAction::toString() const

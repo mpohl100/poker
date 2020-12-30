@@ -4,8 +4,6 @@
 #include "HandHistory.h"
 #include "Player.h"
 
-#include <iostream>
-
 namespace game52{
 
 BettingAction
@@ -14,15 +12,12 @@ DecisionEngine::decide( Pot const& pot,
                         HandHistory& handHistory,
                         Player& hero)
 {    
-    auto position = game52::toString(hero.getPosition());
-    std::cout << position << '\n';
     std::optional<BettingAction> lastAction = handHistory.getLastBet(board.street());
     std::optional<BettingAction> lastHeroAction = handHistory.getLastBet(board.street(), &hero);
     // hero is opening the action of the street, options are check or raise
     if(not lastAction)
     {
-        BettingAction openAction(board.street());
-        openAction.player = hero;
+        BettingAction openAction(hero, board.street());
         openAction.previousBet = 0;
         switch(rand() % 2){
             case 0: openAction.nextBet = 0; openAction.decision = Decision::Check; break;
@@ -34,8 +29,7 @@ DecisionEngine::decide( Pot const& pot,
     {
         if(not lastHeroAction) // we are acting for the first time in the hand
         {
-            BettingAction nextAction(board.street());
-            nextAction.player = hero;
+            BettingAction nextAction(hero, board.street());
             if(lastAction->nextBet == 0) // it has been checked to us
             {
                 nextAction.previousBet = 0;
@@ -57,8 +51,7 @@ DecisionEngine::decide( Pot const& pot,
         }
         else
         {   // we are acting a second time 
-            BettingAction nextAction(board.street());
-            nextAction.player = hero;
+            BettingAction nextAction(hero, board.street());
             nextAction.toCall = lastAction->nextBet;
             nextAction.previousBet = lastHeroAction->nextBet;
             if(nextAction.previousBet == nextAction.toCall){

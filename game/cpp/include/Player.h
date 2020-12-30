@@ -53,6 +53,7 @@ class Player{
         Position getPosition() const;
         Stack getStack() const;
         int getNumber() const;
+        std::string getName() const;
     private:
         Stack stack_;
         std::shared_ptr<DecisionEngine> engine_;

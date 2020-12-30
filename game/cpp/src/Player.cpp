@@ -177,4 +177,10 @@ int Player::getNumber() const
     return nb_;
 }
 
+
+std::string Player::getName() const
+{
+    return "Player " + std::to_string(nb_);
+}
+
 }

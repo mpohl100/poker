@@ -13,8 +13,9 @@
 
 namespace game52 {
 
-Hand::Hand(Player* player, HoleCards const& holeCards, Board const& board)
-    : player_(player)
+Hand::Hand(HoleCards const& holeCards, Board const& board)
+    : holeCards_(holeCards)
+    , board_(board)
 {
     cards_ = holeCards.getCards();
     const auto& boardCards = board.getCards();
@@ -24,6 +25,16 @@ Hand::Hand(Player* player, HoleCards const& holeCards, Board const& board)
 std::vector<Card52> Hand::getCards() const
 {
     return cards_;
+}
+
+HoleCards const& Hand::getHoleCards() const
+{
+    return holeCards_;
+}
+
+std::string Hand::toString() const
+{
+    return "";
 }
 
 ClassifiedHand::ClassifiedHand(std::vector<Card52>::iterator begin, std::vector<Card52>::iterator end )
