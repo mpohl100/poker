@@ -5,6 +5,7 @@
 #include "HoleCards.h"
 #include "Player.h"
 #include "Hand.h"
+#include "Pot.h"
 
 namespace game52{
 
@@ -89,6 +90,21 @@ public:
     std::string toString() const override;
     std::optional<Hand> hand;
 };
+
+class PotAction : public HandAction{
+public:
+    PotAction(Player const& player, Stack amount, Pot const& pot);
+    PotAction() = default;
+    PotAction(PotAction const&) = default;
+    PotAction& operator=(PotAction const&) = default;
+    PotAction(PotAction&&) = default;
+    PotAction& operator=(PotAction&&) = default;
+    std::string toString() const override;
+    Stack amount;
+    Pot pot;
+};
+
+
 
 class SummaryAction : public HandAction{
 public:

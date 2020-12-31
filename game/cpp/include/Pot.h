@@ -9,6 +9,7 @@ class Pot{
         void putAmount(Stack amt);
         int getAmount() const;
         Stack get();
+        std::string toString() const;
     private:
         Stack amount_ = 0;
 };

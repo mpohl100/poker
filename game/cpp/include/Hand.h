@@ -71,6 +71,7 @@ bool operator>=(ClassifiedHand const& l, ClassifiedHand const& r);
 bool operator==(ClassifiedHand const& l, ClassifiedHand const& r);
 bool operator!=(ClassifiedHand const& l, ClassifiedHand const& r);
 
+ClassifiedHand getBestHand(Hand hand);
 
 
 }

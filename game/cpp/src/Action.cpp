@@ -20,7 +20,7 @@ BettingAction::BettingAction(Player const& player, Street street)
 
 std::string BettingAction::toString() const
 {
-    std::string ret = game52::toString(player.getPosition()); 
+    std::string ret = player.getName() + ": "; 
     if( decision == Decision::Fold)
         ret += " folds.";
     else if( decision == Decision::Check )
@@ -34,12 +34,12 @@ std::string BettingAction::toString() const
 
 std::string DealingAction::toString() const
 {
-    return "dealt to " + game52::toString(player.getPosition()) + " [" + holeCards.toString() + "]";
+    return "dealt to " + player.getName() + " [" + holeCards.toString() + "]";
 }
 
 std::string BoardAction::toString() const
 {
-    std::string s = game52::toString(board.street()) + '\n';
+    std::string s = game52::toString(board.street());
     std::string firstCards;
     int N = board.street() == Flop  ? int(board.getCards().size()) 
                                     : int(board.getCards().size()) - 1;
@@ -51,12 +51,14 @@ std::string BoardAction::toString() const
         firstCards = '[' + firstCards + ']';
     if(board.street() >= Turn)
         firstCards += " ["+ board.getCards().back().toString() + "]";
-    return s + firstCards; 
+    if(not firstCards.empty())
+        s += "\n" + firstCards;
+    return s; 
 }
 
 std::string SeatingAction::toString() const
 {
-    return "Seat " + std::to_string(player.getNumber()) + ": " 
+    return "Seat " + player.getName() + ": " 
         + game52::toString(player.getPosition()) 
         + " (" + player.getStack().toString() + " in chips)"  ;
 }
@@ -71,6 +73,17 @@ std::string ShowdownAction::toString() const
     if(not hand)
         return player.getName() + " mucks.";
     return player.getName() + " shows [" + hand->getHoleCards().toString() + "], " + hand->toString();
+}
+
+PotAction::PotAction(Player const& player, Stack amount, Pot const& pot)
+    : HandAction(player)
+    , amount(amount)
+    , pot(pot)
+{}
+
+std::string PotAction::toString() const
+{
+    return player.getName() + " wins " + amount.toString() + " from " + pot.toString(); 
 }
 
 std::string SummaryAction::toString() const

@@ -34,7 +34,37 @@ HoleCards const& Hand::getHoleCards() const
 
 std::string Hand::toString() const
 {
-    return "";
+    ClassifiedHand classified = getBestHand(*this);
+    switch(classified.handRank_){
+        case ClassifiedHand::HighCard:{
+            return "High Card.";
+        }break;
+        case ClassifiedHand::Pair:{
+            return "a pair.";
+        }break;
+        case ClassifiedHand::TwoPair: {
+            return "two pair.";
+        }break;
+        case ClassifiedHand::Trips:{
+            return "three of a kind.";
+        }break;
+        case ClassifiedHand::Straight:{
+            return "a straight.";
+        }break;
+        case ClassifiedHand::Flush:{
+            return "a flush.";
+        }break;
+        case ClassifiedHand::FullHouse:{
+            return "a full house.";
+        }break;
+        case ClassifiedHand::Quads:{
+            return "four of a kind.";
+        }break;
+        case ClassifiedHand::StraightFlush:{
+            return "a straight flush.";
+        }
+        default: return "";
+    }
 }
 
 ClassifiedHand::ClassifiedHand(std::vector<Card52>::iterator begin, std::vector<Card52>::iterator end )
@@ -123,8 +153,9 @@ std::array<Rank52,2> ClassifiedHand::findOccurences(int nb) const
     for(const auto& [rank, occ] : rankOccurences_)
         if(occ == nb)
             ret[index++] = rank;
-    if(ret[0] < ret[1])
-        std::swap(ret[0], ret[1]);
+    if(index == 2)
+        if(ret[0] < ret[1])
+            std::swap(ret[0], ret[1]);
     return ret;
 };
 
@@ -275,7 +306,7 @@ ClassifiedHand getBestHand(Hand hand)
     return bestHand;
 }
 
-int compareHands([[maybe_unused]] Hand left, [[maybe_unused]] Hand right)
+int compareHands(Hand left, Hand right)
 {
     ClassifiedHand bestLeft = getBestHand(left);
     ClassifiedHand bestRight = getBestHand(right);

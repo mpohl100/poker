@@ -135,20 +135,33 @@ void Nlhe52::playHand()
             {
                 Hand firstHand = Hand(player.get().getHoleCards(), board);
                 currentWinner = std::pair{ firstHand, std::vector{&player.get()} };
+                handHistory.logAction(std::make_unique<ShowdownAction>(player.get(), firstHand));
             }
             else
             {
                 Hand newHand(player.get().getHoleCards(), board);
                 int result = compareHands(newHand, currentWinner->first);
                 switch(result){
-                    case 1: currentWinner = std::pair{newHand, std::vector{&player.get()}}; break;
-                    case 0: currentWinner->second.push_back(&player.get()); break;
-                    case -1: break; // do nothing 
+                    case 1: 
+                    {
+                        currentWinner = std::pair{newHand, std::vector{&player.get()}};
+                        handHistory.logAction(std::make_unique<ShowdownAction>(player.get(), newHand));
+                    } break;
+                    case 0:
+                    {
+                        currentWinner->second.push_back(&player.get());
+                        handHistory.logAction(std::make_unique<ShowdownAction>(player.get(), newHand));
+                    }
+                    break;
+                    case -1: handHistory.logAction(std::make_unique<ShowdownAction>(player.get(), std::nullopt)); break; // do nothing 
                 }
             }
         }
-        for(const auto& player : currentWinner->second){
-            player->putAmount( pot.getAmount() / int(currentWinner->second.size()));
+        for(const auto& player : currentWinner->second)
+        {
+            Stack amount = pot.getAmount() / int(currentWinner->second.size());
+            player->putAmount(amount);
+            handHistory.logAction(std::make_unique<PotAction>(*player, amount, pot));
         }
     }
     std::cout << handHistory.toString() << '\n';
@@ -187,18 +200,18 @@ Nlhe52::playRound(size_t starting_pos, Pot& pot, Board const& board, HandHistory
         size_t nb = 0;
         for(auto& player : offset(playersInHand_, firstToAsk, N))
         {
+            nb++;
             if( not player.get().hasHoleCards() )
                 continue;
             Decision decision = player.get().decide(pot, board, handHistory);
             if(decision == Decision::Raise)
             {
                 newRaiser = true;
-                firstToAsk += nb + 1;
+                firstToAsk += nb;
                 if(firstToAsk >= playersInHand_.size())
                     firstToAsk -= playersInHand_.size();
                 break;
             }
-            nb++;
         }
         N = playersInHand_.size() - 1;
         if(not newRaiser)
@@ -211,7 +224,9 @@ Nlhe52::playRound(size_t starting_pos, Pot& pot, Board const& board, HandHistory
     if(std::count_if(players_.begin(), players_.end(), [](const auto& p){ return p.hasHoleCards();}) == 1)
     {
         auto it = std::find_if(players_.begin(), players_.end(),[](const auto& p){return p.hasHoleCards();} );
-        it->putAmount(pot.get());
+        Stack amount = pot.get();
+        it->putAmount(amount);
+        handHistory.logAction(std::make_unique<PotAction>(*it, amount, pot));
         return {true, raiser}; // hand finished
     }
     return {false, raiser};

@@ -12,6 +12,7 @@ TEST_CASE("Hands", "[game]") {
             CHECK(ClassifiedHand::fromString("Kh Td 2c 3s 5d").handRank_ == ClassifiedHand::HighCard);
             CHECK(ClassifiedHand::fromString("Ah Td 2c 3s 5d").handRank_ == ClassifiedHand::HighCard);
             CHECK(ClassifiedHand::fromString("Ah 2h 2c 3s 5d").handRank_ == ClassifiedHand::Pair);
+            CHECK(ClassifiedHand::fromString("Ah 2h 2c 4s 5d").handRank_ == ClassifiedHand::Pair);
             CHECK(ClassifiedHand::fromString("Ah Td Tc 3s 5d").handRank_ == ClassifiedHand::Pair);
             CHECK(ClassifiedHand::fromString("Ah Ad 2c 3s 5d").handRank_ == ClassifiedHand::Pair);
             CHECK(ClassifiedHand::fromString("Qh Qd 2c 2s 5d").handRank_ == ClassifiedHand::TwoPair);
@@ -38,6 +39,8 @@ TEST_CASE("Hands", "[game]") {
             ClassifiedHand::fromString("Kh Td 2c 3s 5d"),
             ClassifiedHand::fromString("Ah Td 2c 3s 5d"),
             ClassifiedHand::fromString("Ah 2h 2c 3s 5d"),
+            ClassifiedHand::fromString("Ah 2h 2c Ks 5d"),
+            ClassifiedHand::fromString("Ah 2h 2c Ks Qd"),
             ClassifiedHand::fromString("Ah Td Tc 3s 5d"),
             ClassifiedHand::fromString("Ah Ad 2c 3s 5d"),
             ClassifiedHand::fromString("Qh Qd 2c 2s 5d"),

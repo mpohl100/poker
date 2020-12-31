@@ -19,5 +19,10 @@ Stack Pot::get()
     return amount;
 }
 
+std::string Pot::toString() const
+{
+    return "main pot";
+}
+
 
 }

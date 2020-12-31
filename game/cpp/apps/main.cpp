@@ -4,8 +4,8 @@
 
 int main(){
     game52::Nlhe52 holdem(3);
-    std::cout << "playing hand\n";
-    holdem.playHand();
+    for(int i = 0; i < 9; ++i)
+        holdem.playHand();
     return 0;
 }
 
