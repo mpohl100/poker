@@ -56,6 +56,7 @@ public:
     ClassifiedHand& operator=(ClassifiedHand&&) = default;
     
     std::array<Rank52,2> findOccurences(int nb) const;
+    std::vector<Rank52> getHighCards() const;
     int sum() const;
     static ClassifiedHand fromString(std::string const& str);
 

@@ -4,7 +4,7 @@
 #include "HowardsCombinatorics.h"
 
 
-#include <ranges>
+#include <range/v3/all.hpp>
 #include <stdexcept>
 #include <map>
 #include <algorithm>
@@ -159,6 +159,16 @@ std::array<Rank52,2> ClassifiedHand::findOccurences(int nb) const
     return ret;
 };
 
+std::vector<Rank52> ClassifiedHand::getHighCards() const
+{
+    auto highCards = rankOccurences_ | ranges::view::filter([](const auto& pr){ return pr.second == 1; })
+                                    | ranges::view::transform([](const auto& pr){ return pr.first;})
+                                    | ranges::to<std::vector>() 
+                                    | ranges::action::sort 
+                                    | ranges::action::reverse;
+    return highCards;
+}
+
 int ClassifiedHand::sum() const
 {
     return std::accumulate(cards_.begin(), cards_.end(), 0, [](int l, const Card52& r){return l + r.rank();});
@@ -176,6 +186,10 @@ ClassifiedHand ClassifiedHand::fromString(std::string const& str)
     return ClassifiedHand(hand.begin(), hand.end());
 }
 
+bool compareHighCards(std::vector<Rank52> const& l, std::vector<Rank52> const& r)
+{
+    return std::lexicographical_compare(l.begin(), l.end(), r.begin(), r.end());
+}
 
 bool operator<(ClassifiedHand const& l, ClassifiedHand const& r)
 {
@@ -186,7 +200,7 @@ bool operator<(ClassifiedHand const& l, ClassifiedHand const& r)
     // high card
     if(l.handRank_ == ClassifiedHand::HighCard)
     {
-        return l.sum() < r.sum();
+        return compareHighCards(l.getHighCards(), r.getHighCards());
     }
     if(l.handRank_ == ClassifiedHand::Pair)
     {
@@ -194,7 +208,7 @@ bool operator<(ClassifiedHand const& l, ClassifiedHand const& r)
         auto rPairRank = r.findOccurences(2);
         if(lpairRank[0] != rPairRank[0])
             return lpairRank[0] < rPairRank[0];
-        return l.sum() < r.sum(); // if pairs are even, the higher card wins
+        return compareHighCards(l.getHighCards(), r.getHighCards()); // if pairs are even, the higher card wins
     }
     if(l.handRank_ == ClassifiedHand::TwoPair)
     {
@@ -204,7 +218,7 @@ bool operator<(ClassifiedHand const& l, ClassifiedHand const& r)
             return lpairRank[0] < rPairRank[0];
         if(lpairRank[1] != rPairRank[1])
             return lpairRank[1] < rPairRank[1];
-        return l.sum() < r.sum(); // if pairs are even, the higher card wins
+        return compareHighCards(l.getHighCards(), r.getHighCards()); // if pairs are even, the higher card wins
     }
     if(l.handRank_ == ClassifiedHand::Trips)
     {
@@ -212,7 +226,7 @@ bool operator<(ClassifiedHand const& l, ClassifiedHand const& r)
         auto rPairRank = r.findOccurences(3);
         if(lpairRank[0] != rPairRank[0])
             return lpairRank[0] < rPairRank[0];
-        return l.sum() < r.sum(); // if trips are even, the higher card wins
+        return compareHighCards(l.getHighCards(), r.getHighCards()); // if trips are even, the higher card wins
     }
     if(l.handRank_ == ClassifiedHand::Straight)
     {
@@ -227,7 +241,7 @@ bool operator<(ClassifiedHand const& l, ClassifiedHand const& r)
     }
     if(l.handRank_ == ClassifiedHand::Flush)
     {
-        return l.sum() < r.sum();
+        return compareHighCards(l.getHighCards(), r.getHighCards());
     }
     if(l.handRank_ == ClassifiedHand::FullHouse)
     {
@@ -241,7 +255,7 @@ bool operator<(ClassifiedHand const& l, ClassifiedHand const& r)
         rPairRank = r.findOccurences(2);
         if(lpairRank[0] != rPairRank[0])
             return lpairRank[0] < rPairRank[0];
-        return l.sum() < r.sum(); // if pairs are even, the higher card wins
+        return compareHighCards(l.getHighCards(), r.getHighCards());
     }
     if(l.handRank_ == ClassifiedHand::Quads)
     {
@@ -249,7 +263,7 @@ bool operator<(ClassifiedHand const& l, ClassifiedHand const& r)
         auto rPairRank = r.findOccurences(4);
         if(lpairRank[0] != rPairRank[0])
             return lpairRank[0] < rPairRank[0];
-        return l.sum() < r.sum(); // if pairs are even, the higher card wins
+        return compareHighCards(l.getHighCards(), r.getHighCards());
     }
     if( l.handRank_ == ClassifiedHand::StraightFlush)
     {

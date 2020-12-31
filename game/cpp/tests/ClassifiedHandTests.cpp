@@ -11,6 +11,7 @@ TEST_CASE("Hands", "[game]") {
     SECTION("HandRanks"){ 
             CHECK(ClassifiedHand::fromString("Kh Td 2c 3s 5d").handRank_ == ClassifiedHand::HighCard);
             CHECK(ClassifiedHand::fromString("Ah Td 2c 3s 5d").handRank_ == ClassifiedHand::HighCard);
+            CHECK(ClassifiedHand::fromString("Kh 2h 2c Qs Jd").handRank_ == ClassifiedHand::Pair);
             CHECK(ClassifiedHand::fromString("Ah 2h 2c 3s 5d").handRank_ == ClassifiedHand::Pair);
             CHECK(ClassifiedHand::fromString("Ah 2h 2c 4s 5d").handRank_ == ClassifiedHand::Pair);
             CHECK(ClassifiedHand::fromString("Ah Td Tc 3s 5d").handRank_ == ClassifiedHand::Pair);
@@ -38,6 +39,7 @@ TEST_CASE("Hands", "[game]") {
         std::vector<ClassifiedHand> hands{
             ClassifiedHand::fromString("Kh Td 2c 3s 5d"),
             ClassifiedHand::fromString("Ah Td 2c 3s 5d"),
+            ClassifiedHand::fromString("Kh 2h 2c Qs Jd"),
             ClassifiedHand::fromString("Ah 2h 2c 3s 5d"),
             ClassifiedHand::fromString("Ah 2h 2c Ks 5d"),
             ClassifiedHand::fromString("Ah 2h 2c Ks Qd"),
