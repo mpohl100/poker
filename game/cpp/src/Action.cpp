@@ -58,8 +58,8 @@ std::string BoardAction::toString() const
 
 std::string SeatingAction::toString() const
 {
-    return "Seat " + player.getName() + ": " 
-        + game52::toString(player.getPosition()) 
+    return "Seat " + std::to_string(player.getNumber()) + ": " 
+        + player.getName() + "(" + game52::toString(player.getPosition()) + ")" 
         + " (" + player.getStack().toString() + " in chips)"  ;
 }
 
