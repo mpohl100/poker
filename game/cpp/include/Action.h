@@ -39,6 +39,11 @@ public:
     Stack toCall = 0;
     Decision decision;
     Street street;
+
+    static BettingAction
+    create( Player const& player, Street street, 
+            Stack nextBet, Stack previousBet, 
+            Stack toCall, Decision decision);
 };
 
 class DealingAction : public HandAction{

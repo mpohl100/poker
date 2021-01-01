@@ -11,6 +11,7 @@ class Pot;
 class Board;
 class HandHistory;
 class DecisionEngine;
+class Dealer;
 
 enum class Position{
     UTG,
@@ -47,13 +48,14 @@ class Player{
         void dealHoleCards(HoleCards const&);
         bool hasHoleCards() const;
         HoleCards getHoleCards() const;
-        Decision decide(Pot& pot, Board const& board, HandHistory& handHistory);
+        Decision decide(Dealer& pot, Board const& board, HandHistory& handHistory);
         bool ready(Stack currentBet, Board const& board, HandHistory const& handHistory) const;
         void setPlayerIndex(int index, size_t size);
         Position getPosition() const;
         Stack getStack() const;
         int getNumber() const;
         std::string getName() const;
+        bool isAllin() const;
     private:
         Stack stack_;
         std::shared_ptr<DecisionEngine> engine_;

@@ -11,6 +11,7 @@ set( LIB_SOURCES
     Board.cpp
     Hand.cpp
     Action.cpp
+    Dealer.cpp
     )
 
 set( LIBNAME game)

@@ -5,6 +5,8 @@
 
 namespace game52{
 
+class Dealer;
+
 class Nlhe52{
 public:
     Nlhe52(int nb_players);
@@ -18,7 +20,7 @@ private:
     Player& smallBlindPlayer();
     Player& bigBlindPlayer();
     bool ready(Stack currentBet, Board const& board, HandHistory const& handHistory);
-    std::pair<bool, int> playRound(size_t starting_pos, Pot& pot, Board const& board, HandHistory& HandHistory);
+    std::pair<bool, int> playRound(size_t starting_pos, Dealer& dealer, Board const& board, HandHistory& HandHistory);
 
     Deck52 deck_;
     size_t dealer_ = 0;

@@ -2,6 +2,7 @@
 #include "HandHistory.h"
 #include "Pot.h"
 #include "DecisionEngine.h"
+#include "Dealer.h"
 
 #include <iostream>
 
@@ -56,9 +57,9 @@ HoleCards Player::getHoleCards() const
 }
 
 Decision 
-Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
+Player::decide(Dealer& dealer, Board const& board, HandHistory& handHistory)
 {
-    BettingAction next = engine_->decide(pot, board, handHistory, *this);
+    BettingAction next = engine_->decide(dealer.getCurrentPot(), board, handHistory, *this);
     handHistory.logAction(std::make_unique<BettingAction>(next));
     if(next.nextBet == 0)
     {
@@ -69,8 +70,7 @@ Player::decide(Pot& pot, Board const& board, HandHistory& handHistory)
     else
     {
         // book bet,call or raise
-        pot.putAmount(next.nextBet-next.previousBet);
-        getAmount(next.nextBet-next.previousBet);
+        dealer.acceptBet(*this, next);
     }
     return next.decision;
 }
@@ -181,6 +181,11 @@ int Player::getNumber() const
 std::string Player::getName() const
 {
     return "Player " + std::to_string(nb_);
+}
+
+bool Player::isAllin() const
+{
+    return stack_ == Stack(0);
 }
 
 }

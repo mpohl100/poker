@@ -32,6 +32,18 @@ std::string BettingAction::toString() const
     return ret;
 }
 
+BettingAction BettingAction::create(  Player const& player, Street street, 
+                    Stack nextBet, Stack previousBet, 
+                    Stack toCall, Decision decision)
+{
+    BettingAction bet(player, street);
+    bet.nextBet = nextBet;
+    bet.previousBet = previousBet;
+    bet.toCall = toCall;
+    bet.decision = decision;
+    return bet;
+}
+
 std::string DealingAction::toString() const
 {
     return "dealt to " + player.getName() + " [" + holeCards.toString() + "]";
