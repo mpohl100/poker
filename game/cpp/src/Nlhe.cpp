@@ -50,17 +50,17 @@ void Nlhe52::playHand()
         handHistory.logAction(std::make_unique<SeatingAction>(seatingAction));
     }
     // post blinds and antes
-    Dealer dealer;
+    Dealer dealer{Stack(bigBlind)};
     Board board;
 
     BettingAction sbAction(smallBlindPlayer(), Preflop);
-    dealer.getCurrentPot().putAmount(smallBlindPlayer().getAmount(smallBlind));
+    dealer.getCurrentPot().putAmount(&smallBlindPlayer(),smallBlindPlayer().getAmount(smallBlind));
     sbAction.nextBet = smallBlind;
     sbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(sbAction));
 
     BettingAction bbAction(bigBlindPlayer(),Preflop);
-    dealer.getCurrentPot().putAmount(bigBlindPlayer().getAmount(bigBlind));
+    dealer.getCurrentPot().putAmount(&bigBlindPlayer(), bigBlindPlayer().getAmount(bigBlind));
     bbAction.nextBet = bigBlind;
     bbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(bbAction));

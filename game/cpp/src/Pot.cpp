@@ -1,10 +1,12 @@
 #include "Pot.h"
+#include "Player.h"
 
 namespace game52 {
 
-void Pot::putAmount(Stack amt)
+void Pot::putAmount(Player* player, Stack amt)
 {
     amount_ += amt;
+    bets_[player] += amt;
 }
 
 int Pot::getAmount() const
