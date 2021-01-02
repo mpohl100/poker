@@ -50,7 +50,7 @@ void Nlhe52::playHand()
         handHistory.logAction(std::make_unique<SeatingAction>(seatingAction));
     }
     // post blinds and antes
-    Dealer dealer{Stack(bigBlind)};
+    Dealer dealer{playersInHand_, Stack(bigBlind)};
     Board board;
 
     BettingAction sbAction(smallBlindPlayer(), Preflop);

@@ -183,9 +183,9 @@ std::string Player::getName() const
     return "Player " + std::to_string(nb_);
 }
 
-bool Player::isAllin() const
+bool Player::isAllin(Stack bet) const
 {
-    return stack_ == Stack(0);
+    return stack_ == bet;
 }
 
 }

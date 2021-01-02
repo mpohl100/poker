@@ -55,7 +55,7 @@ class Player{
         Stack getStack() const;
         int getNumber() const;
         std::string getName() const;
-        bool isAllin() const;
+        bool isAllin(Stack bet) const;
     private:
         Stack stack_;
         std::shared_ptr<DecisionEngine> engine_;

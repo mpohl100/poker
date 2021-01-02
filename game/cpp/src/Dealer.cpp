@@ -5,14 +5,15 @@
 
 namespace game52{
 
-Dealer::Dealer(Stack bigBlind)
-    : bigBlind_(bigBlind)
+Dealer::Dealer(std::vector<std::reference_wrapper<Player>> const& players, Stack bigBlind)
+    : players_(players) 
+    , bigBlind_(bigBlind)
 {}
 
 auto getMadeBets(std::map<Player*,Stack> bets)
 {
-    return bets | ranges::view::values  | ranges::view::unique | ranges::to<std::vector> 
-                | ranges::action::sort(std::greater<Stack>());
+    return bets | ranges::view::values | ranges::to<std::vector<Stack>> | ranges::action::unique
+                | ranges::action::sort(std::greater<Stack>{});
 }
 
 std::pair<Stack, Stack> getCurrentBets(std::map<Player*, Stack> const& bets)
@@ -29,10 +30,28 @@ std::pair<Stack, Stack> getCurrentBets(std::map<Player*, Stack> const& bets)
     return {currentBet, previousBet};
 }
 
-bool actionRequired(Player& player, std::map<Player*, Stack> const& bets)
+Stack getAllinAmount(Player& player, std::map<Player*, Stack> const& bets)
+{
+    if(bets.find(&player) == bets.end())
+        return Stack(0);
+    return bets.at(&player);
+}
+
+auto getLeftWithChips(std::vector<std::reference_wrapper<Player>> const& players,
+             std::map<Player*, Stack> const& bets)
+{
+    return players | ranges::view::filter([&bets](const auto& p){ return p.get().hasHoleCards() and not p.get().isAllin(getAllinAmount(p.get(), bets));});
+}
+
+bool actionRequired(Player& player, [[maybe_unused]] std::vector<std::reference_wrapper<Player>> const& players, std::map<Player*, Stack> const& bets)
 {
     if(bets.find(&player) == bets.end()) // player has not bet yet
         return true;
+    // if only one player is left with chips
+    //auto leftWithChips = getLeftWithChips(players, bets);
+    //size_t nb = ranges::distance(leftWithChips);
+    //if(nb <= 1)
+    //    return false;
     auto madeBets = getMadeBets(bets);
     auto highestBetR = madeBets | ranges::view::take(1);
     Stack highestBet = 0;
@@ -41,48 +60,79 @@ bool actionRequired(Player& player, std::map<Player*, Stack> const& bets)
     return highestBet != bets.at(&player);
 }
 
-Options Dealer::getOptions(Player& player)
+std::optional<Stack> 
+getMaxAmount(std::vector<std::reference_wrapper<Player>> const& players,
+             std::map<Player*, Stack> const& bets)
 {
-    if(not player.hasHoleCards() or player.isAllin())
+    auto leftWithChips = getLeftWithChips(players, bets);
+    auto secondBiggestAmountR = leftWithChips | ranges::view::transform([](const auto& p){ return p.get().getStack();})
+                                              | ranges::to<std::vector>
+                                              | ranges::action::sort(std::greater<Stack>{});
+    if(ranges::distance(secondBiggestAmountR) > 1)
+        return *ranges::next(ranges::begin(secondBiggestAmountR));
+    return std::nullopt;
+}
+
+Stack takeSmaller(Stack l, Stack r)
+{
+    return l < r ? l : r;
+}
+
+Stack takeBigger(Stack l, Stack r)
+{
+    return l > r ? l : r;
+}
+
+Options Dealer::getOptions(Player& player) const
+{
+    if(not player.hasHoleCards() or player.isAllin(getAllinAmount(player, bets_)))
         return {};
-    if(not actionRequired(player, bets_))
+    if(not actionRequired(player, players_, bets_))
         return {};
     auto [currentBet, previousBet] = getCurrentBets(bets_);
     Options ret;
+    std::optional<Stack> maxAmount = getMaxAmount(players_, bets_);
+    if(not maxAmount)
+        return {}; // if there is no maxAmount, the action for the hand is closed
+    *maxAmount = takeSmaller(*maxAmount, player.getStack());
     if(currentBet == Stack(0))
-        ret.options = { {Decision::Check, Stack(0)}, 
-                        {Decision::Raise, Stack(bigBlind_)} };
+        ret.options = { {Decision::Check, {Stack(0), Stack(0)}}, 
+                        {Decision::Raise, {takeSmaller(bigBlind_, *maxAmount), *maxAmount}} };
+    else if(currentBet < maxAmount)
+        ret.options = { {Decision::Fold, {Stack(0),Stack(0)}}, 
+                        {Decision::Call, {currentBet, currentBet} }, 
+                        {Decision::Raise, {takeSmaller(currentBet + takeBigger(currentBet - previousBet, bigBlind_), *maxAmount), *maxAmount}} };
     else
-        ret.options = { {Decision::Fold, Stack(0)}, 
-                        {Decision::Call, Stack(currentBet) }, 
-                        {Decision::Raise, currentBet + (currentBet - previousBet > bigBlind_ ? currentBet - previousBet : bigBlind_) } };
+        ret.options =  { {Decision::Fold, {Stack(0), Stack(0)} },
+                         {Decision::Call, {*maxAmount, *maxAmount} } };
     return ret;
 }
 
 void Dealer::acceptBet(Player& player, BettingAction const& bettingAction)
 {
     Stack toBeBooked = bettingAction.nextBet - bettingAction.previousBet;
-    Stack receivedBet = player.getAmount(toBeBooked);
-    bets_[&player] += receivedBet;
+    bets_[&player] += toBeBooked;
 }
 
 void Dealer::rakeIn()
 {
     std::map<Stack,int> allinAmounts;
     for(const auto& [player, stack] : bets_)
-        if(player->isAllin())
+        if(player->isAllin(stack))
             allinAmounts[stack]++;
     Stack prevAllinAmount = Stack(0);
     for(const auto& [allinAmount, nb] : allinAmounts)
     {
         for(auto& [player, stack] : bets_)
-            getCurrentPot().putAmount(player, stack.getAmount(allinAmount - prevAllinAmount));
+            getCurrentPot().putAmount(player, player->getAmount(stack.getAmount(allinAmount - prevAllinAmount)));
         closedPots_.push_back(getCurrentPot());
         getCurrentPot() = Pot{};
         prevAllinAmount = allinAmount;
     }
     for(const auto& [player, stack] : bets_)
-        getCurrentPot().putAmount(player, stack);
+    {
+        getCurrentPot().putAmount(player, player->getAmount(stack));
+    }
     bets_ = {};
 }
 
