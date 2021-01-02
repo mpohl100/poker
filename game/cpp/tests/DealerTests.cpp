@@ -58,22 +58,78 @@ TEST_CASE("Dealer", "[game]"){
         for(auto& player : players) {
             player.dealHoleCards(deck.getHoleCards());
         }
-        std::vector<BettingAction> bets = {            
+        std::vector<BettingAction> preflopBets = {            
             BettingAction::create(players[1], Preflop, Stack(10), Stack(0), Stack(0), Decision::Raise),
             BettingAction::create(players[2], Preflop, Stack(20), Stack(0), Stack(0), Decision::Raise),
             BettingAction::create(players[0], Preflop, Stack(60), Stack(0), Stack(20), Decision::Raise),
-            BettingAction::create(players[1], Preflop, Stack(0), Stack(10), Stack(50), Decision::Fold),
+            BettingAction::create(players[1], Preflop, Stack(0), Stack(10), Stack(60), Decision::Fold),
             BettingAction::create(players[2], Preflop, Stack(200), Stack(20), Stack(60), Decision::Raise),
-            BettingAction::create(players[0], Preflop, Stack(140), Stack(60), Stack(140), Decision::Call),
+            BettingAction::create(players[0], Preflop, Stack(200), Stack(60), Stack(200), Decision::Call),
         };
         TestDealer dealer(Stack(20));
-        dealer.acceptBet(players[1], bets[0]);
-        dealer.acceptBet(players[2], bets[1]);
+
+        dealer.acceptBet(players[1], preflopBets[0]);
+        dealer.acceptBet(players[2], preflopBets[1]);
         Options options = dealer.getOptions(players[0]);
         CHECK(options.options.size() == 3);
         CHECK(options.options[0] == std::pair{Decision::Fold, Stack(0)});
-        CHECK(options.options[0] == std::pair{Decision::Call, Stack(20)});
-        CHECK(options.options[0] == std::pair{Decision::Raise, Stack(40)});
+        CHECK(options.options[1] == std::pair{Decision::Call, Stack(20)});
+        CHECK(options.options[2] == std::pair{Decision::Raise, Stack(40)});
+        
+        dealer.acceptBet(players[0], preflopBets[2]);
+        options = dealer.getOptions(players[1]);
+        CHECK(options.options.size() == 3);
+        CHECK(options.options[0] == std::pair{Decision::Fold, Stack(0)});
+        CHECK(options.options[1] == std::pair{Decision::Call, Stack(60)});
+        CHECK(options.options[2] == std::pair{Decision::Raise, Stack(100)});        
+        
+        dealer.acceptBet(players[1], preflopBets[3]);
+        players[1].dealHoleCards({});
+        options = dealer.getOptions(players[2]);
+        CHECK(options.options.size() == 3);
+        CHECK(options.options[0] == std::pair{Decision::Fold, Stack(0)});
+        CHECK(options.options[1] == std::pair{Decision::Call, Stack(60)});
+        CHECK(options.options[2] == std::pair{Decision::Raise, Stack(100)});
+        
+        dealer.acceptBet(players[2], preflopBets[4]);
+        options = dealer.getOptions(players[0]);
+        CHECK(options.options.size() == 3);
+        CHECK(options.options[0] == std::pair{Decision::Fold, Stack(0)});
+        CHECK(options.options[1] == std::pair{Decision::Call, Stack(200)});
+        CHECK(options.options[2] == std::pair{Decision::Raise, Stack(340)});
+        
+        dealer.acceptBet(players[0], preflopBets[5]);
+        options = dealer.getOptions(players[1]);
+        CHECK(options.options.size() == 0);
+        options = dealer.getOptions(players[2]);
+        CHECK(options.options.size() == 0);
+        options = dealer.getOptions(players[0]);
+        CHECK(options.options.size() == 0);
+
+        dealer.rakeIn();
+
+        std::vector<BettingAction> flopBets= {
+            BettingAction::create(players[2], Flop, Stack(300), Stack(0), Stack(0), Decision::Raise),
+            BettingAction::create(players[0], Flop, Stack(300), Stack(0), Stack(300), Decision::Call),
+        };
+
+        options = dealer.getOptions(players[2]);
+        CHECK(options.options.size() == 2);
+        CHECK(options.options[0] == std::pair{Decision::Check, Stack(0)});
+        CHECK(options.options[1] == std::pair{Decision::Raise, Stack(20)});
+        
+        dealer.acceptBet(players[2], flopBets[0]);
+        options = dealer.getOptions(players[0]);
+        CHECK(options.options.size() == 3);
+        CHECK(options.options[0] == std::pair{Decision::Fold, Stack(0)});
+        CHECK(options.options[1] == std::pair{Decision::Call, Stack(300)});
+        CHECK(options.options[2] == std::pair{Decision::Raise, Stack(600)});
+
+        dealer.acceptBet(players[0], flopBets[1]);
+        options = dealer.getOptions(players[2]);
+        CHECK(options.options.size() == 0);
+        options = dealer.getOptions(players[0]);
+        CHECK(options.options.size() == 0);
     }
 }
 

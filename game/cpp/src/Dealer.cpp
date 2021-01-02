@@ -9,12 +9,15 @@ Dealer::Dealer(Stack bigBlind)
     : bigBlind_(bigBlind)
 {}
 
-Options Dealer::getOptions(Player& player)
+auto getMadeBets(std::map<Player*,Stack> bets)
 {
-    if(not player.hasHoleCards() or player.isAllin())
-        return {};
-    auto madeBets = bets_ | ranges::view::values  | ranges::view::unique | ranges::to<std::vector> 
-                          | ranges::action::sort(std::greater<Stack>());
+    return bets | ranges::view::values  | ranges::view::unique | ranges::to<std::vector> 
+                | ranges::action::sort(std::greater<Stack>());
+}
+
+std::pair<Stack, Stack> getCurrentBets(std::map<Player*, Stack> const& bets)
+{
+    auto madeBets = getMadeBets(bets);
     auto currentBetR = madeBets | ranges::view::take(1);
     auto previousBetR = madeBets | ranges::view::drop(1) | ranges::view::take(1);
     Stack currentBet = 0;
@@ -23,14 +26,36 @@ Options Dealer::getOptions(Player& player)
     Stack previousBet = 0;
     if(ranges::distance(previousBetR) == 1)
         previousBet = *ranges::begin(previousBetR);
+    return {currentBet, previousBet};
+}
+
+bool actionRequired(Player& player, std::map<Player*, Stack> const& bets)
+{
+    if(bets.find(&player) == bets.end()) // player has not bet yet
+        return true;
+    auto madeBets = getMadeBets(bets);
+    auto highestBetR = madeBets | ranges::view::take(1);
+    Stack highestBet = 0;
+    if(ranges::distance(highestBetR) == 1)
+        highestBet = *ranges::begin(highestBetR);
+    return highestBet != bets.at(&player);
+}
+
+Options Dealer::getOptions(Player& player)
+{
+    if(not player.hasHoleCards() or player.isAllin())
+        return {};
+    if(not actionRequired(player, bets_))
+        return {};
+    auto [currentBet, previousBet] = getCurrentBets(bets_);
     Options ret;
     if(currentBet == Stack(0))
         ret.options = { {Decision::Check, Stack(0)}, 
                         {Decision::Raise, Stack(bigBlind_)} };
     else
         ret.options = { {Decision::Fold, Stack(0)}, 
-                        {Decision::Call, Stack(currentBet)}, 
-                        {Decision::Raise, currentBet - previousBet} };
+                        {Decision::Call, Stack(currentBet) }, 
+                        {Decision::Raise, currentBet + (currentBet - previousBet > bigBlind_ ? currentBet - previousBet : bigBlind_) } };
     return ret;
 }
 
