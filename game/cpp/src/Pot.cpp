@@ -3,7 +3,7 @@
 
 namespace game52 {
 
-void Pot::putAmount(Player* player, Stack amt)
+void Pot::putAmount(const Player* player, Stack amt)
 {
     amount_ += amt;
     bets_[player] += amt;

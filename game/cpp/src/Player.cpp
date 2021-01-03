@@ -30,7 +30,7 @@ Player::Player(Stack stack, DecisionEngine const& engine, int nb)
     , nb_(nb)
 {}
 
-Stack Player::getAmount(Stack amt)
+Stack Player::getAmount(Stack amt) const
 {
     return stack_.getAmount(amt); 
 }
@@ -59,19 +59,12 @@ HoleCards Player::getHoleCards() const
 Decision 
 Player::decide(Dealer& dealer, Board const& board, HandHistory& handHistory)
 {
-    BettingAction next = engine_->decide(dealer.getCurrentPot(), board, handHistory, *this);
+    BettingAction next = engine_->decide(dealer, board, *this);
     handHistory.logAction(std::make_unique<BettingAction>(next));
-    if(next.nextBet == 0)
-    {
-        // only fold, if it has been bet before
-        if(next.decision == Decision::Fold)
-            holeCards_ = {};
-    }
-    else
-    {
-        // book bet,call or raise
-        dealer.acceptBet(*this, next);
-    }
+    dealer.acceptBet(*this, next);
+    // only fold, if it has been bet before
+    if(next.decision == Decision::Fold)
+        holeCards_ = {};
     return next.decision;
 }
 
@@ -185,7 +178,7 @@ std::string Player::getName() const
 
 bool Player::isAllin(Stack bet) const
 {
-    return stack_ == bet;
+    return stack_ <= bet;
 }
 
 }

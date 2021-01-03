@@ -27,6 +27,18 @@ Stack& Stack::operator-=(Stack other)
     return *this;
 }
 
+Stack& Stack::operator*=(int mult)
+{
+    amount_ *= mult;
+    return *this;
+}
+
+Stack& Stack::operator/=(int div)
+{
+    amount_ /= div;
+    return *this;
+}
+
 std::string Stack::toString() const
 {
     return std::to_string(amount_);
@@ -46,4 +58,17 @@ Stack operator+(Stack left, Stack right)
     return ret;
 }
 
+Stack operator*(Stack left, int mult)
+{
+    Stack ret = left;
+    ret *= mult;
+    return ret;
+}
+
+Stack operator/(Stack left, int div)
+{
+    Stack ret = left;
+    ret /= div;
+    return ret;
+}
 }

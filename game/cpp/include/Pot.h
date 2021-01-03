@@ -10,12 +10,12 @@ class Player;
 
 class Pot{
     public:
-        void putAmount(Player* player, Stack amt);
+        void putAmount(const Player* player, Stack amt);
         int getAmount() const;
         Stack get();
         std::string toString() const;
     private:
-        std::map<Player*, Stack> bets_;
+        std::map<const Player*, Stack> bets_;
         Stack amount_ = 0;
 };
 

@@ -6,14 +6,13 @@
 
 namespace game52{
 
-class Pot;
+class Dealer;
 class Board;
-class HandHistory;
 class Player;
 
 class DecisionEngine{
 public:
-    BettingAction decide(Pot const& pot, Board const& board, HandHistory& handHistory, Player& hero);
+    BettingAction decide(Dealer const& dealer, Board const& board, Player& hero);
 };
 
 }

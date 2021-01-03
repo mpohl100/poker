@@ -54,16 +54,18 @@ void Nlhe52::playHand()
     Board board;
 
     BettingAction sbAction(smallBlindPlayer(), Preflop);
-    dealer.getCurrentPot().putAmount(&smallBlindPlayer(),smallBlindPlayer().getAmount(smallBlind));
+    //dealer.getCurrentPot().putAmount(&smallBlindPlayer(),smallBlindPlayer().getAmount(smallBlind));
     sbAction.nextBet = smallBlind;
     sbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(sbAction));
+    dealer.acceptBet(smallBlindPlayer(), sbAction);
 
     BettingAction bbAction(bigBlindPlayer(),Preflop);
-    dealer.getCurrentPot().putAmount(&bigBlindPlayer(), bigBlindPlayer().getAmount(bigBlind));
+    //dealer.getCurrentPot().putAmount(&bigBlindPlayer(), bigBlindPlayer().getAmount(bigBlind));
     bbAction.nextBet = bigBlind;
     bbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(bbAction));
+    dealer.acceptBet(bigBlindPlayer(), bbAction);
 
 
     BoardAction preflopAction;

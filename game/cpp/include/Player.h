@@ -43,7 +43,7 @@ class Player{
         Player(Player&&) = default;
         Player& operator=(Player&&) = default;
 
-        Stack getAmount(Stack amount);
+        Stack getAmount(Stack amount) const;
         void putAmount(Stack amt);
         void dealHoleCards(HoleCards const&);
         bool hasHoleCards() const;
@@ -57,7 +57,7 @@ class Player{
         std::string getName() const;
         bool isAllin(Stack bet) const;
     private:
-        Stack stack_;
+        mutable Stack stack_;
         std::shared_ptr<DecisionEngine> engine_;
         HoleCards holeCards_;
         std::pair<int, size_t> pos_{0,2}; // to deduce the position;

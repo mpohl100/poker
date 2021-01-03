@@ -16,6 +16,8 @@ struct Stack{
      
     Stack& operator+=(Stack other);
     Stack& operator-=(Stack other);
+    Stack& operator*=(int mult);
+    Stack& operator/=(int div);
     std::string toString() const;
      
     int amount_ = 0;
@@ -25,5 +27,6 @@ struct Stack{
 
 Stack operator-(Stack left, Stack right);
 Stack operator+(Stack left, Stack right);
-
+Stack operator*(Stack left, int mult);
+Stack operator/(Stack left, int div);
 }
