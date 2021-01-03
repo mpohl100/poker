@@ -292,6 +292,36 @@ TEST_CASE("Dealer", "[game]"){
         options = dealer.getOptions(players[0]);
         CHECK(options.options.size() == 0);   
     }
+    SECTION("Big Blind Action preflop"){
+        std::vector<Player> players = {
+            Player(Stack(2500), {}, 1),
+            Player(Stack(2000), {}, 2),
+            Player(Stack(1500), {}, 3),
+        };
+        std::vector<std::reference_wrapper<Player>> playersInHand;
+        for(auto& player : players)
+            playersInHand.push_back(player);
+        Deck52 deck;
+        deck.shuffle();
+        for(auto& player : playersInHand)
+            player.get().dealHoleCards(deck.getHoleCards());
+        std::vector<BettingAction> preflopBets = {            
+            BettingAction::create(players[1], Preflop, Stack(10), Stack(0), Stack(0), Decision::Raise),
+            BettingAction::create(players[2], Preflop, Stack(20), Stack(0), Stack(0), Decision::Raise),
+            BettingAction::create(players[0], Preflop, Stack(20), Stack(0), Stack(20), Decision::Call),
+            BettingAction::create(players[1], Preflop, Stack(20), Stack(10), Stack(20), Decision::Call),
+            BettingAction::create(players[2], Preflop, Stack(0), Stack(0), Stack(0), Decision::Check),
+        };
+        TestDealer dealer(playersInHand, Stack(20));
+        dealer.acceptBet(players[1], preflopBets[0]);
+        dealer.acceptBet(players[2], preflopBets[1]);
+        dealer.acceptBet(players[0], preflopBets[2]);
+        dealer.acceptBet(players[1], preflopBets[3]);
+        Options options = dealer.getOptions(players[2]);
+        CHECK(options.options.size() == 2);
+        CHECK(options.options[0] == std::pair{ Decision::Check, std::pair{Stack(0), Stack(0)}});
+        CHECK(options.options[1] == std::pair{ Decision::Raise, std::pair{Stack(20), Stack(1500)}});
+    }
 }
 
 }

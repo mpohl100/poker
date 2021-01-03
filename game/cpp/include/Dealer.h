@@ -2,6 +2,7 @@
 
 #include "Pot.h"
 #include "Player.h"
+#include "Board.h"
 
 #include <map>
 
@@ -27,9 +28,12 @@ public:
     Pot& getCurrentPot();
     void showdown() const;
     Stack getCurrentBet(Player const& player) const;
+    const Player& bigBlindPlayer() const;
 protected:
+    bool actionRequired(Player& player) const;
     std::vector<std::reference_wrapper<Player>> players_;
     Stack bigBlind_;
+    Street street_ = Preflop;
     mutable std::unique_ptr<std::optional<Stack>> maxAmount_;
     std::map<const Player*, Stack> bets_;
     std::vector<Pot> closedPots_;

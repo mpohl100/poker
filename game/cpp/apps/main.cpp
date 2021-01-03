@@ -4,7 +4,7 @@
 
 int main(){
     game52::Nlhe52 holdem(3);
-    for(int i = 0; i < 9; ++i)
+    for(int i = 0; i < 1; ++i)
         holdem.playHand();
     return 0;
 }

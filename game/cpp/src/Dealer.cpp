@@ -43,16 +43,18 @@ auto getLeftWithChips(std::vector<std::reference_wrapper<Player>> const& players
     return players | ranges::view::filter([&bets](const auto& p){ return p.get().hasHoleCards() and not p.get().isAllin(getAllinAmount(p.get(), bets));});
 }
 
-bool actionRequired(Player& player, std::map<const Player*, Stack> const& bets)
+bool Dealer::actionRequired(Player& player) const
 {
-    if(bets.find(&player) == bets.end()) // player has not bet yet
+    if(bets_.find(&player) == bets_.end()) // player has not bet yet
         return true;
-    auto madeBets = getMadeBets(bets);
+    auto madeBets = getMadeBets(bets_);
     auto highestBetR = madeBets | ranges::view::take(1);
     Stack highestBet = 0;
     if(ranges::distance(highestBetR) == 1)
         highestBet = *ranges::begin(highestBetR);
-    return highestBet != bets.at(&player);
+    if(street_ == Preflop and &player == &bigBlindPlayer() and highestBet == bigBlind_)
+        return true;
+    return highestBet != bets_.at(&player);
 }
 
 std::optional<Stack> 
@@ -78,11 +80,18 @@ Stack takeBigger(Stack l, Stack r)
     return l > r ? l : r;
 }
 
+const Player& Dealer::bigBlindPlayer() const
+{
+    if(players_.size() == 2)
+        return players_[1].get();
+    return players_[2].get();
+}
+
 Options Dealer::getOptions(Player& player) const
 {
     if(not player.hasHoleCards() or player.isAllin(getAllinAmount(player, bets_)))
         return {};
-    if(not actionRequired(player, bets_))
+    if(not actionRequired(player))
         return {};
     auto [currentBet, previousBet] = getCurrentBets(bets_);
     Options ret;
@@ -95,7 +104,7 @@ Options Dealer::getOptions(Player& player) const
     if(not maxAmount)
         return {}; // if there is no maxAmount, the action for the hand is closed
     *maxAmount = takeSmaller(*maxAmount, player.getStack());
-    if(currentBet == Stack(0))
+    if(currentBet == Stack(0) or (street_ == Preflop and currentBet == Stack(bigBlind_) and &player == &bigBlindPlayer() ))
         ret.options = { {Decision::Check, {Stack(0), Stack(0)}}, 
                         {Decision::Raise, {takeSmaller(bigBlind_, *maxAmount), *maxAmount}} };
     else if(currentBet < maxAmount)
@@ -112,13 +121,14 @@ void Dealer::acceptBet(Player& player, BettingAction const& bettingAction)
 {
     Stack toBeBooked = bettingAction.nextBet - bettingAction.previousBet;
     bets_[&player] += toBeBooked;
+    street_ = bettingAction.street;
 }
 
 void Dealer::rakeIn()
 {
     std::map<Stack,int> allinAmounts;
     for(const auto& [player, stack] : bets_)
-        if(player->isAllin(stack))
+        if(player->isAllin(stack)) //TODO and allinIsCalled implementieren
             allinAmounts[stack]++;
     Stack prevAllinAmount = Stack(0);
     for(const auto& [allinAmount, nb] : allinAmounts)
