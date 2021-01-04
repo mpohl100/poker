@@ -204,7 +204,7 @@ Nlhe52::playRound(size_t starting_pos, Dealer& dealer, Board const& board, HandH
         for(auto& player : offset(playersInHand_, firstToAsk, N))
         {
             nb++;
-            if( not player.get().hasHoleCards() )
+            if( dealer.getOptions(player.get()).options.empty())
                 continue;
             Decision decision = player.get().decide(dealer, board, handHistory);
             if(decision == Decision::Raise)

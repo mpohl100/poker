@@ -38,10 +38,9 @@ Stack getAllinAmount(Player& player, std::map<const Player*, Stack> const& bets)
     return bets.at(&player);
 }
 
-auto getLeftWithChips(std::vector<std::reference_wrapper<Player>> const& players,
-             std::map<const Player*, Stack> const& bets)
+auto getLeftInHand(std::vector<std::reference_wrapper<Player>> const& players)
 {
-    return players | ranges::view::filter([&bets](const auto& p){ return p.get().hasHoleCards() and not p.get().isAllin(getAllinAmount(p.get(), bets));});
+    return players | ranges::view::filter([](const auto& p){ return p.get().hasHoleCards();});
 }
 
 bool Dealer::actionRequired(Player& player) const
@@ -58,17 +57,15 @@ bool Dealer::actionRequired(Player& player) const
     return highestBet != bets_.at(&player);
 }
 
-std::optional<Stack> 
-getMaxAmount(std::vector<std::reference_wrapper<Player>> const& players,
-             std::map<const Player*, Stack> const& bets)
+Stack getMaxAmount(std::vector<std::reference_wrapper<Player>> const& players)
 {
-    auto leftWithChips = getLeftWithChips(players, bets);
-    auto secondBiggestAmountR = leftWithChips | ranges::view::transform([](const auto& p){ return p.get().getStack();})
-                                              | ranges::to<std::vector>
-                                              | ranges::action::sort(std::greater<Stack>{});
+    auto leftInHand = getLeftInHand(players);
+    auto secondBiggestAmountR = leftInHand  | ranges::view::transform([](const auto& p){ return p.get().getStack();})
+                                            | ranges::to<std::vector>
+                                            | ranges::action::sort(std::greater<Stack>{});
     if(ranges::distance(secondBiggestAmountR) > 1)
         return *ranges::next(ranges::begin(secondBiggestAmountR));
-    return std::nullopt;
+    throw std::runtime_error("max amount could not be deduced as not enough players are left in the hand");
 }
 
 Stack takeSmaller(Stack l, Stack r)
@@ -97,24 +94,20 @@ Options Dealer::getOptions(Player& player) const
     auto [currentBet, previousBet] = getCurrentBets(bets_);
     Options ret;
     // only calculate maxAmount once per betting round
-    if(not maxAmount_){
-        maxAmount_ = std::make_unique<std::optional<Stack>>();
-        *maxAmount_ = getMaxAmount(players_, bets_);
-    }
-    std::optional<Stack> maxAmount = *maxAmount_;
-    if(not maxAmount)
-        return {}; // if there is no maxAmount, the action for the hand is closed
-    *maxAmount = takeSmaller(*maxAmount, player.getStack());
+    Stack maxAmount = getMaxAmount(players_);
+    maxAmount = takeSmaller(maxAmount, player.getStack());
+    if(maxAmount == Stack(0))
+        return {};
     if(currentBet == Stack(0) or (street_ == Preflop and currentBet == Stack(bigBlind_) and &player == &bigBlindPlayer() ))
         ret.options = { {Decision::Check, {Stack(0), Stack(0)}}, 
-                        {Decision::Raise, {takeSmaller(bigBlind_, *maxAmount), *maxAmount}} };
+                        {Decision::Raise, {takeSmaller(bigBlind_, maxAmount), maxAmount}} };
     else if(currentBet < maxAmount)
         ret.options = { {Decision::Fold, {Stack(0),Stack(0)}}, 
                         {Decision::Call, {currentBet, currentBet} }, 
-                        {Decision::Raise, {takeSmaller(currentBet + takeBigger(currentBet - previousBet, bigBlind_), *maxAmount), *maxAmount}} };
+                        {Decision::Raise, {takeSmaller(currentBet + takeBigger(currentBet - previousBet, bigBlind_), maxAmount), maxAmount}} };
     else
         ret.options =  { {Decision::Fold, {Stack(0), Stack(0)} },
-                         {Decision::Call, {*maxAmount, *maxAmount} } };
+                         {Decision::Call, {maxAmount, maxAmount} } };
     return ret;
 }
 
@@ -153,11 +146,8 @@ void Dealer::rakeIn()
         prevAllinAmount = allinAmount;
     }
     for(const auto& [player, stack] : bets_)
-    {
         getCurrentPot().putAmount(player, player->getAmount(stack));
-    }
     bets_ = {};
-    maxAmount_ = nullptr;
 }
 
 Pot& Dealer::getCurrentPot()

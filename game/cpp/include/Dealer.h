@@ -34,7 +34,6 @@ protected:
     std::vector<std::reference_wrapper<Player>> players_;
     Stack bigBlind_;
     Street street_ = Preflop;
-    mutable std::unique_ptr<std::optional<Stack>> maxAmount_;
     std::map<const Player*, Stack> bets_;
     std::vector<Pot> closedPots_;
     Pot currentPot_;
