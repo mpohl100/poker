@@ -1,7 +1,8 @@
 #include "Dealer.h"
 #include "Action.h"
 
-#include<range/v3/all.hpp>
+#include <range/v3/all.hpp>
+#include <algorithm>
 
 namespace game52{
 
@@ -124,11 +125,23 @@ void Dealer::acceptBet(Player& player, BettingAction const& bettingAction)
     street_ = bettingAction.street;
 }
 
+bool allinIsCalled(Stack allin, std::map<const Player*, Stack> const& bets)
+{
+    auto sortedBets = bets | ranges::view::transform([](const auto& pr){ return pr.second; })
+                           | ranges::to<std::vector>
+                           | ranges::action::sort
+                           | ranges::action::reverse;
+    auto secondLargestIt = ranges::next(ranges::begin(sortedBets));
+    if(secondLargestIt != ranges::end(sortedBets))
+        return *secondLargestIt >= allin;
+    return false; 
+}
+
 void Dealer::rakeIn()
 {
     std::map<Stack,int> allinAmounts;
     for(const auto& [player, stack] : bets_)
-        if(player->isAllin(stack)) //TODO and allinIsCalled implementieren
+        if(player->isAllin(stack) and allinIsCalled(stack, bets_))
             allinAmounts[stack]++;
     Stack prevAllinAmount = Stack(0);
     for(const auto& [allinAmount, nb] : allinAmounts)
