@@ -26,5 +26,10 @@ std::string Pot::toString() const
     return "main pot";
 }
 
+std::map<const Player*, Stack> const& Pot::getBets() const
+{
+    return bets_;
+}
+
 
 }

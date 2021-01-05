@@ -44,7 +44,7 @@ class Player{
         Player& operator=(Player&&) = default;
 
         Stack getAmount(Stack amount) const;
-        void putAmount(Stack amt);
+        void putAmount(Stack amt) const;
         void dealHoleCards(HoleCards const&);
         bool hasHoleCards() const;
         HoleCards getHoleCards() const;

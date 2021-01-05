@@ -1,5 +1,6 @@
 #include "Dealer.h"
 #include "Action.h"
+#include "HandHistory.h"
 
 #include <range/v3/all.hpp>
 #include <algorithm>
@@ -150,14 +151,76 @@ void Dealer::rakeIn()
     bets_ = {};
 }
 
+void showdown(Pot& pot, Board const& board, HandHistory& handHistory)
+{
+    // show down
+    std::optional<std::pair<Hand, std::vector<const Player*>>> currentWinner;
+    auto players = pot.getBets() | ranges::view::transform([](const auto& pr){ return pr.first; })
+                                 | ranges::to<std::vector>;
+    for(auto& player : players | ranges::view::filter([](const auto& p){ return p->hasHoleCards();}))
+    {
+        if( not currentWinner)
+        {
+            Hand firstHand = Hand(player->getHoleCards(), board);
+            currentWinner = std::pair{ firstHand, std::vector{player} };
+            handHistory.logAction(std::make_unique<ShowdownAction>(*player, firstHand));
+        }
+        else
+        {
+            Hand newHand(player->getHoleCards(), board);
+            int result = compareHands(newHand, currentWinner->first);
+            switch(result){
+                case 1: 
+                {
+                    currentWinner = std::pair{newHand, std::vector{player}};
+                    handHistory.logAction(std::make_unique<ShowdownAction>(*player, newHand));
+                } break;
+                case 0:
+                {
+                    currentWinner->second.push_back(player);
+                    handHistory.logAction(std::make_unique<ShowdownAction>(*player, newHand));
+                }
+                break;
+                case -1: handHistory.logAction(std::make_unique<ShowdownAction>(*player, std::nullopt)); break; // do nothing 
+            }
+        }
+    }
+    for(const auto& player : currentWinner->second)
+    {
+        Stack amount = pot.getAmount() / int(currentWinner->second.size());
+        player->putAmount(amount);
+        handHistory.logAction(std::make_unique<PotAction>(*player, amount, pot));
+    }
+}
+
+bool Dealer::awardPots(Board const& board, HandHistory& handHistory)
+{
+    if(closedPots_.empty())
+    {
+        int playersWithHand = ranges::count_if(getCurrentPot().getBets(), [](const auto& pr){ return pr.first->hasHoleCards();});
+        if(playersWithHand == 1)
+        {
+            auto it = std::find_if( getCurrentPot().getBets().begin(),  getCurrentPot().getBets().end(),
+                                    [](const auto& p){return p.first->hasHoleCards();} );
+            Stack amount = getCurrentPot().get();
+            it->first->putAmount(amount);
+            handHistory.logAction(std::make_unique<PotAction>(*it->first, amount, getCurrentPot()));
+            return true; // finished
+        } 
+    }
+    if(board.street() == River)
+    {
+        showdown(getCurrentPot(), board, handHistory);
+        for(auto& sidepot : closedPots_)
+            showdown(sidepot, board, handHistory);
+        return true;
+    }
+    return false;
+}
+
 Pot& Dealer::getCurrentPot()
 {
     return currentPot_;
-}
-
-void Dealer::showdown() const
-{
-
 }
 
 Stack Dealer::getCurrentBet(Player const& player) const

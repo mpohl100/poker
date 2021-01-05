@@ -50,6 +50,34 @@ TEST_CASE("Dealer", "[game]"){
         CHECK(playersInHand[1].get().getStack() == Stack(0));
         CHECK(playersInHand[2].get().getStack() == Stack(500));
     }
+    SECTION("Preflop All-In Refund"){
+        std::vector<Player> players = {
+            Player(Stack(3000), {}, 1),
+            Player(Stack(1500), {}, 2),
+            Player(Stack(2000), {}, 3),
+        };
+        std::vector<std::reference_wrapper<Player>> playersInHand;
+        for(auto& player : players)
+            playersInHand.push_back(player);
+        std::vector<BettingAction> bets = {
+            BettingAction::create(players[0], Preflop, Stack(2000), Stack(0), Stack(20), Decision::Raise),
+            BettingAction::create(players[1], Preflop, Stack(1500), Stack(0), Stack(2000), Decision::Call),
+            BettingAction::create(players[2], Preflop, Stack(0), Stack(0), Stack(2000), Decision::Fold),
+        };
+        TestDealer dealer(playersInHand, Stack(20));
+        dealer.acceptBet(players[0], bets[0]);
+        dealer.acceptBet(players[1], bets[1]);
+        dealer.acceptBet(players[2], bets[2]);
+        dealer.rakeIn();
+        auto sidepots = dealer.getClosedPots();
+
+        CHECK(sidepots.size() == 1);
+        CHECK(sidepots[0].get() == Stack(3000));
+        CHECK(dealer.getCurrentPot().get() == Stack(500));
+        CHECK(playersInHand[0].get().getStack() == Stack(1000));
+        CHECK(playersInHand[1].get().getStack() == Stack(0));
+        CHECK(playersInHand[2].get().getStack() == Stack(2000));
+    }
     SECTION("Options normal all-in"){
         std::vector<Player> players = {
             Player(Stack(2500), {}, 1),

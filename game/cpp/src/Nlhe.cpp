@@ -127,46 +127,6 @@ void Nlhe52::playHand()
         std::cout << handHistory.toString() << '\n';
         return;
     }
-    else
-    {
-        // show down
-        std::optional<std::pair<Hand, std::vector<Player*>>> currentWinner;
-        auto players = offset(playersInHand_, lastRaiser);
-        for(auto& player : players | ranges::view::filter([](const auto& p){ return p.get().hasHoleCards();}))
-        {
-            if( not currentWinner)
-            {
-                Hand firstHand = Hand(player.get().getHoleCards(), board);
-                currentWinner = std::pair{ firstHand, std::vector{&player.get()} };
-                handHistory.logAction(std::make_unique<ShowdownAction>(player.get(), firstHand));
-            }
-            else
-            {
-                Hand newHand(player.get().getHoleCards(), board);
-                int result = compareHands(newHand, currentWinner->first);
-                switch(result){
-                    case 1: 
-                    {
-                        currentWinner = std::pair{newHand, std::vector{&player.get()}};
-                        handHistory.logAction(std::make_unique<ShowdownAction>(player.get(), newHand));
-                    } break;
-                    case 0:
-                    {
-                        currentWinner->second.push_back(&player.get());
-                        handHistory.logAction(std::make_unique<ShowdownAction>(player.get(), newHand));
-                    }
-                    break;
-                    case -1: handHistory.logAction(std::make_unique<ShowdownAction>(player.get(), std::nullopt)); break; // do nothing 
-                }
-            }
-        }
-        for(const auto& player : currentWinner->second)
-        {
-            Stack amount = dealer.getCurrentPot().getAmount() / int(currentWinner->second.size());
-            player->putAmount(amount);
-            handHistory.logAction(std::make_unique<PotAction>(*player, amount, dealer.getCurrentPot()));
-        }
-    }
     std::cout << handHistory.toString() << '\n';
 }
 
@@ -224,16 +184,7 @@ Nlhe52::playRound(size_t starting_pos, Dealer& dealer, Board const& board, HandH
     int raiser = firstToAsk - 1;
     if(raiser < 0)
         raiser += int(playersInHand_.size());
-    // if only one player has hole cards after the betting round, the hand is finished
-    if(std::count_if(players_.begin(), players_.end(), [](const auto& p){ return p.hasHoleCards();}) == 1)
-    {
-        auto it = std::find_if(players_.begin(), players_.end(),[](const auto& p){return p.hasHoleCards();} );
-        Stack amount = dealer.getCurrentPot().get();
-        it->putAmount(amount);
-        handHistory.logAction(std::make_unique<PotAction>(*it, amount, dealer.getCurrentPot()));
-        return {true, raiser}; // hand finished
-    }
-    return {false, raiser};
+    return {dealer.awardPots(board, handHistory), raiser};
 }
 
 }

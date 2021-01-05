@@ -9,6 +9,7 @@
 namespace game52{
 
 class BettingAction;
+class HandHistory;
 
 struct Options{
     std::vector<std::pair<Decision, std::pair<Stack,Stack>>> options;
@@ -22,11 +23,12 @@ public:
     Dealer& operator=(Dealer const&) = default;
     Dealer(Dealer&&) = default;
     Dealer& operator=(Dealer&&) = default;
+
     Options getOptions(Player& player) const;
     void acceptBet(Player& player, BettingAction const& bettingAction);
     void rakeIn();
+    bool awardPots(Board const& board, HandHistory& handHistory);
     Pot& getCurrentPot();
-    void showdown() const;
     Stack getCurrentBet(Player const& player) const;
     const Player& bigBlindPlayer() const;
 protected:

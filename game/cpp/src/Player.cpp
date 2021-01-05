@@ -35,7 +35,7 @@ Stack Player::getAmount(Stack amt) const
     return stack_.getAmount(amt); 
 }
 
-void Player::putAmount(Stack amt)
+void Player::putAmount(Stack amt) const
 {
     stack_ += amt; 
 }
