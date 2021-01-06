@@ -54,7 +54,10 @@ bool Dealer::actionRequired(Player& player) const
     if(ranges::distance(highestBetR) == 1)
         highestBet = *ranges::begin(highestBetR);
     if(street_ == Preflop and &player == &bigBlindPlayer() and highestBet == bigBlind_)
-        return true;
+    {
+        int nbPlayersWithHand = ranges::count_if(players_, [](const auto& p){ return p.get().hasHoleCards();});
+        return nbPlayersWithHand > 1;
+    }
     return highestBet != bets_.at(&player);
 }
 
