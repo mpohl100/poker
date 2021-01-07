@@ -5,6 +5,8 @@ namespace game52 {
 
 void Pot::putAmount(const Player* player, Stack amt)
 {
+    if( amt == Stack(0))
+        return;
     amount_ += amt;
     bets_[player] += amt;
 }

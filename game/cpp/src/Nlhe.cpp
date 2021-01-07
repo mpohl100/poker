@@ -34,6 +34,12 @@ auto offset(std::vector<T> const& rng, size_t offset, size_t N = 0)
 
 void Nlhe52::playHand()
 {
+    // rebuy
+    for(auto& player : playersInHand_)
+        if(player.get().getStack() == Stack(0))
+            player.get().putAmount(Stack(bigBlind)*100);
+    Stack allPlayers = std::accumulate(playersInHand_.begin(), playersInHand_.end(),Stack(0), 
+                    [](Stack stack, const auto& p){ return stack + p.get().getStack();});
     // shuffle
     deck_.shuffle();
     // move dealer button
@@ -54,15 +60,13 @@ void Nlhe52::playHand()
     Board board;
 
     BettingAction sbAction(smallBlindPlayer(), Preflop);
-    //dealer.getCurrentPot().putAmount(&smallBlindPlayer(),smallBlindPlayer().getAmount(smallBlind));
-    sbAction.nextBet = smallBlind;
+    sbAction.nextBet = Stack(smallBlind) < smallBlindPlayer().getStack() ? Stack(smallBlind) : smallBlindPlayer().getStack();
     sbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(sbAction));
     dealer.acceptBet(smallBlindPlayer(), sbAction);
 
     BettingAction bbAction(bigBlindPlayer(),Preflop);
-    //dealer.getCurrentPot().putAmount(&bigBlindPlayer(), bigBlindPlayer().getAmount(bigBlind));
-    bbAction.nextBet = bigBlind;
+    bbAction.nextBet = Stack(bigBlind) < bigBlindPlayer().getStack() ? Stack(bigBlind) : bigBlindPlayer().getStack();
     bbAction.decision = Decision::Raise;
     handHistory.logAction(std::make_unique<BettingAction>(bbAction));
     dealer.acceptBet(bigBlindPlayer(), bbAction);
@@ -88,6 +92,13 @@ void Nlhe52::playHand()
     if(auto[ finished, lastRaiser] = playRound(firstToAct, dealer, board, handHistory); finished)
     {
         std::cout << handHistory.toString() << '\n';
+        std::cout << allPlayers.toString() << '\n';
+        auto allPlayersAfterHand = std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();});
+        std::cout << allPlayersAfterHand.toString() << '\n';
+        
+        assert(allPlayers == std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();}));
         return;
     }
 
@@ -101,6 +112,12 @@ void Nlhe52::playHand()
     if(auto[ finished, lastRaiser] = playRound(1, dealer, board, handHistory); finished)
     {
         std::cout << handHistory.toString() << '\n';
+        std::cout << allPlayers.toString() << '\n';
+        auto allPlayersAfterHand = std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();});
+        std::cout << allPlayersAfterHand.toString() << '\n';
+        assert(allPlayers == std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();}));
         return;
     }
 
@@ -113,6 +130,12 @@ void Nlhe52::playHand()
     if(auto[ finished, lastRaiser] = playRound(1, dealer, board, handHistory); finished)
     {
         std::cout << handHistory.toString() << '\n';
+        std::cout << allPlayers.toString() << '\n';
+        auto allPlayersAfterHand = std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();});
+        std::cout << allPlayersAfterHand.toString() << '\n';
+        assert(allPlayers == std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();}));
         return;
     }
 
@@ -125,9 +148,21 @@ void Nlhe52::playHand()
     if(auto[ finished, lastRaiser] = playRound(1, dealer, board, handHistory); finished)
     {
         std::cout << handHistory.toString() << '\n';
+        std::cout << allPlayers.toString() << '\n';
+        auto allPlayersAfterHand = std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();});
+        std::cout << allPlayersAfterHand.toString() << '\n';
+        assert(allPlayers == std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();}));
         return;
     }
     std::cout << handHistory.toString() << '\n';
+    std::cout << allPlayers.toString() << '\n';
+    auto allPlayersAfterHand = std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();});
+    std::cout << allPlayersAfterHand.toString() << '\n';
+    assert(allPlayers == std::accumulate(playersInHand_.begin(), playersInHand_.end(), Stack(0),
+                            [](Stack stack, const auto& p){ return stack + p.get().getStack();}));
 }
 
 Player& Nlhe52::smallBlindPlayer()

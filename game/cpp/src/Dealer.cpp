@@ -117,7 +117,9 @@ Options Dealer::getOptions(Player& player) const
 
 void Dealer::acceptBet(Player& player, BettingAction const& bettingAction)
 {
-    Stack toBeBooked = bettingAction.nextBet - bettingAction.previousBet;
+    Stack toBeBooked = bettingAction.nextBet - bets_[&player];
+    if(toBeBooked < 0)
+        toBeBooked = Stack(0);
     bets_[&player] += toBeBooked;
     street_ = bettingAction.street;
 }
@@ -154,6 +156,21 @@ void Dealer::rakeIn()
     bets_ = {};
 }
 
+std::vector<Stack> dividePot(Stack pot, int N)
+{
+    if(pot == Stack(0))
+        return {Stack(0)};
+    if(N == 0)
+        throw std::runtime_error("trying to divide pot " + std::to_string(pot.amount_) + " to " + std::to_string(N) + " players.");
+    // damit bei Split Pot keine chips verloren gehen
+    std::vector<Stack> ret(N, pot / N);
+    int rest = pot.amount_ % N;
+    for(int i = 0; i < rest; ++i)
+        ret[i] += Stack(1);
+    assert(pot == std::accumulate(ret.begin(), ret.end(), Stack(0)));
+    return ret;
+}
+
 void showdown(Pot& pot, Board const& board, HandHistory& handHistory)
 {
     // show down
@@ -188,9 +205,11 @@ void showdown(Pot& pot, Board const& board, HandHistory& handHistory)
             }
         }
     }
+    std::vector<Stack> amounts = dividePot(pot.getAmount(), int(currentWinner->second.size()));
+    int i = 0;
     for(const auto& player : currentWinner->second)
     {
-        Stack amount = pot.getAmount() / int(currentWinner->second.size());
+        Stack amount = amounts[i++];
         player->putAmount(amount);
         handHistory.logAction(std::make_unique<PotAction>(*player, amount, pot));
     }
@@ -214,7 +233,7 @@ bool Dealer::awardPots(Board const& board, HandHistory& handHistory)
     if(board.street() == River)
     {
         showdown(getCurrentPot(), board, handHistory);
-        for(auto& sidepot : closedPots_)
+        for(auto& sidepot : closedPots_ | ranges::view::reverse)
             showdown(sidepot, board, handHistory);
         return true;
     }
