@@ -350,7 +350,7 @@ DrawingHand52::DrawingHand52(std::vector<Card52>::iterator begin, std::vector<Ca
         auto minRank = *std::min_element(cards_.begin(), cards_.end(), compare);
         auto maxRank = *std::max_element(cards_.begin(), cards_.end(), compare);
         bool isOpenend = (maxRank.rank() - minRank.rank()) == 3 and maxRank.rank() <= King;
-        bool isGutshot = (maxRank.rank() - minRank.rank()) == 4;
+        bool isGutshot = (maxRank.rank() - minRank.rank()) == 4 or (maxRank.rank() == Ace and minRank.rank() == Jack);
 
         // check for wheel (A,2,3,4,5)
         auto compareWheel = [](const auto& l, const auto& r){ 
@@ -376,6 +376,8 @@ DrawingHand52::DrawingHand52(std::vector<Card52>::iterator begin, std::vector<Ca
             handRank_ = Gutshot;
         if(isOpenend and not isFlush)
             handRank_ = Openend;
+        if(isFlush)
+            handRank_ = Flush;
         if(isWheelGutshot and isFlush)
             handRank_ = FlushWheelGutshot;
         if(isGutshot and isFlush)
@@ -389,6 +391,19 @@ std::vector<Rank52> DrawingHand52::getHighCards() const
 {
     return cards_ | ranges::view::transform([](const auto& card){ return card.rank(); })
                   | ranges::to<std::vector>;
+}
+
+
+DrawingHand52 DrawingHand52::fromString(std::string const& str)
+{
+    auto cards =  str | std::ranges::views::split(' ')
+                      | std::ranges::views::transform([](auto &&rng) {
+        return std::string(&*rng.begin(), std::ranges::distance(rng));
+    })
+                      | ranges::view::transform([](const std::string& s){ return Card52(s); })
+                      | ranges::to<std::vector>;
+    return DrawingHand52(cards.begin(), cards.end());
+
 }
 
 bool operator<(DrawingHand52 const& l, DrawingHand52 const& r)

@@ -76,11 +76,51 @@ TEST_CASE("Hands", "[game]") {
         CHECK(MadeHand52::fromString("2h 2c 2d 4s 4d") == MadeHand52::fromString("2s 2c 2h 4c 4s"));
         CHECK(MadeHand52::fromString("2h 2c 2d 2s 4d") == MadeHand52::fromString("2s 2c 2h 2d 4s"));
         CHECK(MadeHand52::fromString("Ah 2h 3h 4h 5h") == MadeHand52::fromString("As 2s 3s 4s 5s"));
-        CHECK(MadeHand52::fromString("2h 3h 4h 5h 6h") == MadeHand52::fromString("2s 3s 4s 5s 6s"));
-        
-        
-                
+        CHECK(MadeHand52::fromString("2h 3h 4h 5h 6h") == MadeHand52::fromString("2s 3s 4s 5s 6s"));           
     }
+
+
+SECTION("DrawRanks"){ 
+            CHECK(DrawingHand52::fromString("Kh Td 2c 3s").handRank_ == DrawingHand52::None);
+            CHECK(DrawingHand52::fromString("Ah 2d 3c 4s").handRank_ == DrawingHand52::WheelGutshot);
+            CHECK(DrawingHand52::fromString("2d 3c 4s 6d").handRank_ == DrawingHand52::Gutshot);
+            CHECK(DrawingHand52::fromString("Jd Qc Ks Ad").handRank_ == DrawingHand52::Gutshot);
+            CHECK(DrawingHand52::fromString("2d 3c 4s 5d").handRank_ == DrawingHand52::Openend);
+            CHECK(DrawingHand52::fromString("Ah 2h Kh 4h").handRank_ == DrawingHand52::Flush);
+            CHECK(DrawingHand52::fromString("Ah 2h Kh 6h").handRank_ == DrawingHand52::Flush);
+            CHECK(DrawingHand52::fromString("Ah 2h 3h 4h").handRank_ == DrawingHand52::FlushWheelGutshot);
+            CHECK(DrawingHand52::fromString("2h 3h 4h 6h").handRank_ == DrawingHand52::FlushGutshot);
+            CHECK(DrawingHand52::fromString("Jh Qh Kh Ah").handRank_ == DrawingHand52::FlushGutshot);
+            CHECK(DrawingHand52::fromString("2h 3h 4h 5h").handRank_ == DrawingHand52::FlushOpenend);
+            CHECK(DrawingHand52::fromString("Th Jh Qh Kh").handRank_ == DrawingHand52::FlushOpenend);
+    }
+    SECTION("DrawsSorted") {
+        std::vector<DrawingHand52> hands{
+            DrawingHand52::fromString("Kh Td 2c 3s"),
+            DrawingHand52::fromString("Ah 2d 3c 4s"),
+            DrawingHand52::fromString("2h 3d 4c 6s"),
+            DrawingHand52::fromString("Jd Qc Ks Ad"),
+            DrawingHand52::fromString("2d 3c 4s 5d"),
+            DrawingHand52::fromString("Ah 2h Kh 4h"),
+            DrawingHand52::fromString("Ah 2h Kh 6h"),
+            DrawingHand52::fromString("Ah 2h 3h 4h"),
+            DrawingHand52::fromString("Jh Qh Kh Ah"),
+            DrawingHand52::fromString("2h 3h 4h 5h"),
+            DrawingHand52::fromString("Th Jh Qh Kh"),
+        };
+        CHECK(std::is_sorted(hands.begin(), hands.end()));
+    }
+    SECTION("DrawEquality"){
+        CHECK(DrawingHand52::fromString("Ah Kc 2h 7s") == DrawingHand52::fromString("Ac Kc 2h 7d"));
+        CHECK(DrawingHand52::fromString("Ah 2c 3h 4s") == DrawingHand52::fromString("Ac 2c 3h 4d"));
+        CHECK(DrawingHand52::fromString("2c 3h 4s 6h") == DrawingHand52::fromString("2c 3h 4d 6c"));
+        CHECK(DrawingHand52::fromString("Ah Kh 3h 4h") == DrawingHand52::fromString("As Ks 3s 4s"));
+        CHECK(DrawingHand52::fromString("Ah 2h 3h 4h") == DrawingHand52::fromString("As 2s 3s 4s"));
+        CHECK(DrawingHand52::fromString("2h 3h 4h 5h") == DrawingHand52::fromString("2s 3s 4s 5s"));           
+    }
+
+
+
 }
 
 }

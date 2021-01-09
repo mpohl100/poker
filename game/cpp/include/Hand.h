@@ -96,6 +96,8 @@ public:
 
     std::vector<Rank52> getHighCards() const;
 
+    static DrawingHand52 fromString(std::string const&);
+
     std::vector<Card52> cards_;
     DrawRank52 handRank_;
     std::map<Rank52, int> rankOccurences_;
