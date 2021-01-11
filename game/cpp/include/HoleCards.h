@@ -18,6 +18,7 @@ class HoleCards
         std::string toString() const;
         bool empty() const;
         std::vector<Card52> const& getCards() const;
+        friend auto operator<=>(HoleCards const& l, HoleCards const& r) = default;
     private:
         std::vector<Card52> cards_;
 };

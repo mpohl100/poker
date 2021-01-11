@@ -58,4 +58,28 @@ Card52 Deck52::getCard()
     return dealCard();
 }
 
+void Deck52::moveToFront(std::vector<Card52> const& cards)
+{
+    int i = 0;
+    for(const auto& card : cards)
+    {
+        auto it = std::find(cards_.begin(), cards_.end(), card);
+        std::swap(*it, *(cards_.begin()+i++));
+    }
+    position_ += i;
+}
+
+void Deck52::shuffleRemainder()
+{
+    static std::random_device rng{};
+    static std::mt19937 generator(rng());
+    std::shuffle(cards_.begin() + position_, cards_.end(), generator);
+}
+
+std::pair<std::vector<Card52>::iterator, std::vector<Card52>::iterator>
+Deck52::getRange(size_t N)
+{
+    return { cards_.begin(), cards_.begin() + N };
+}
+
 }

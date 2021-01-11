@@ -1,4 +1,5 @@
 #include "Nlhe.h"
+#include "HandRange.h"
 
 #include <clara.hpp>
 
@@ -24,9 +25,11 @@ int main(int argc, char** argv){
         exit(0);
     }
 
-    game52::Nlhe52 holdem(3);
-    for(int i = 0; i < nbHands; ++i)
-        holdem.playHand();
+    game52::printPreflopStrengths();
+
+    //game52::Nlhe52 holdem(3);
+    //for(int i = 0; i < nbHands; ++i)
+    //    holdem.playHand();
     return 0;
 }
 

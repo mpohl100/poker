@@ -21,6 +21,11 @@ class Deck52{
         std::vector<Card52> getFlop();
         Card52 getCard();
 
+    void moveToFront(std::vector<Card52> const& cards);
+    void shuffleRemainder(); 
+    std::pair<std::vector<Card52>::iterator, std::vector<Card52>::iterator> getRange(size_t N);
+
+
     private:
         Card52 dealCard();
 
