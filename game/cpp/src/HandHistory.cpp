@@ -1,6 +1,6 @@
 #include "HandHistory.h"
 
-#include <ranges>
+#include <range/v3/all.hpp>
 #include <iostream>
 
 namespace game52{
@@ -13,8 +13,8 @@ void HandHistory::logAction(std::unique_ptr<HandAction> handAction)
 std::optional<BettingAction> HandHistory::getLastBet(Street street, Player const* player) const
 {
     auto bets = actions_ 
-                        | std::ranges::views::reverse 
-                        | std::ranges::views::filter([&](const auto& action)
+                        | ranges::views::reverse 
+                        | ranges::views::filter([&](const auto& action)
                         {
                             if( auto bet = dynamic_cast<BettingAction*>(action.get()); bet )
                             {
@@ -24,7 +24,7 @@ std::optional<BettingAction> HandHistory::getLastBet(Street street, Player const
                             }
                             return false;
                         })
-                        | std::ranges::views::take(1);
+                        | ranges::views::take(1);
     auto lastBet = std::ranges::begin(bets);
     if(lastBet != std::ranges::end(bets))
     {

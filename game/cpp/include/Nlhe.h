@@ -23,7 +23,6 @@ private:
     std::pair<bool, int> playRound(size_t starting_pos, Dealer& dealer, Board const& board, HandHistory& HandHistory);
 
     Deck52 deck_;
-    size_t dealer_ = 0;
     std::vector<Player> players_;
     std::vector<std::reference_wrapper<Player>> playersInHand_;
     int smallBlind = 10;

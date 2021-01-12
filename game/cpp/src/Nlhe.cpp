@@ -29,7 +29,7 @@ auto offset(std::vector<T> const& rng, size_t offset, size_t N = 0)
         N = ranges::size(rng);
     if(offset > N)
         throw std::runtime_error("wrong offset in offset range creation: " + std::to_string(offset));
-    return rng | ranges::view::cycle | ranges::view::take(N+offset) | ranges::view::drop(offset);
+    return rng | ranges::views::cycle | ranges::views::take(N+offset) | ranges::views::drop(offset);
 }
 
 void Nlhe52::playHand()

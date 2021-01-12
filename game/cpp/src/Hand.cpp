@@ -161,11 +161,11 @@ std::array<Rank52,2> MadeHand52::findOccurences(int nb) const
 
 std::vector<Rank52> MadeHand52::getHighCards() const
 {
-    auto highCards = rankOccurences_ | ranges::view::filter([](const auto& pr){ return pr.second == 1; })
-                                    | ranges::view::transform([](const auto& pr){ return pr.first;})
+    auto highCards = rankOccurences_ | ranges::views::filter([](const auto& pr){ return pr.second == 1; })
+                                    | ranges::views::transform([](const auto& pr){ return pr.first;})
                                     | ranges::to<std::vector>() 
-                                    | ranges::action::sort 
-                                    | ranges::action::reverse;
+                                    | ranges::actions::sort 
+                                    | ranges::actions::reverse;
     return highCards;
 }
 
@@ -176,8 +176,8 @@ int MadeHand52::sum() const
 
 MadeHand52 MadeHand52::fromString(std::string const& str)
 {
-    auto cards =  str | std::ranges::views::split(' ')
-                      | std::ranges::views::transform([](auto &&rng) {
+    auto cards =  str | ranges::views::split(' ')
+                      | ranges::views::transform([](auto &&rng) {
         return std::string(&*rng.begin(), std::ranges::distance(rng));
     });
     std::vector<Card52> hand;
@@ -389,18 +389,18 @@ DrawingHand52::DrawingHand52(std::vector<Card52>::iterator begin, std::vector<Ca
 
 std::vector<Rank52> DrawingHand52::getHighCards() const
 {
-    return cards_ | ranges::view::transform([](const auto& card){ return card.rank(); })
+    return cards_ | ranges::views::transform([](const auto& card){ return card.rank(); })
                   | ranges::to<std::vector>;
 }
 
 
 DrawingHand52 DrawingHand52::fromString(std::string const& str)
 {
-    auto cards =  str | std::ranges::views::split(' ')
-                      | std::ranges::views::transform([](auto &&rng) {
+    auto cards =  str | ranges::views::split(' ')
+                      | ranges::views::transform([](auto &&rng) {
         return std::string(&*rng.begin(), std::ranges::distance(rng));
     })
-                      | ranges::view::transform([](const std::string& s){ return Card52(s); })
+                      | ranges::views::transform([](const std::string& s){ return Card52(s); })
                       | ranges::to<std::vector>;
     return DrawingHand52(cards.begin(), cards.end());
 

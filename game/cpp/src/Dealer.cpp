@@ -14,15 +14,15 @@ Dealer::Dealer(std::vector<std::reference_wrapper<Player>> const& players, Stack
 
 auto getMadeBets(std::map<const Player*,Stack> bets)
 {
-    return bets | ranges::view::values | ranges::to<std::vector<Stack>> | ranges::action::unique
-                | ranges::action::sort(std::greater<Stack>{});
+    return bets | ranges::views::values | ranges::to<std::vector<Stack>> | ranges::actions::unique
+                | ranges::actions::sort(std::greater<Stack>{});
 }
 
 std::pair<Stack, Stack> getCurrentBets(std::map<const Player*, Stack> const& bets)
 {
     auto madeBets = getMadeBets(bets);
-    auto currentBetR = madeBets | ranges::view::take(1);
-    auto previousBetR = madeBets | ranges::view::drop(1) | ranges::view::take(1);
+    auto currentBetR = madeBets | ranges::views::take(1);
+    auto previousBetR = madeBets | ranges::views::drop(1) | ranges::views::take(1);
     Stack currentBet = 0;
     if(ranges::distance(currentBetR) == 1)
         currentBet = *ranges::begin(currentBetR);
@@ -41,7 +41,7 @@ Stack getAllinAmount(Player& player, std::map<const Player*, Stack> const& bets)
 
 auto getLeftInHand(std::vector<std::reference_wrapper<Player>> const& players)
 {
-    return players | ranges::view::filter([](const auto& p){ return p.get().hasHoleCards();});
+    return players | ranges::views::filter([](const auto& p){ return p.get().hasHoleCards();});
 }
 
 bool Dealer::actionRequired(Player& player) const
@@ -49,7 +49,7 @@ bool Dealer::actionRequired(Player& player) const
     if(bets_.find(&player) == bets_.end()) // player has not bet yet
         return true;
     auto madeBets = getMadeBets(bets_);
-    auto highestBetR = madeBets | ranges::view::take(1);
+    auto highestBetR = madeBets | ranges::views::take(1);
     Stack highestBet = 0;
     if(ranges::distance(highestBetR) == 1)
         highestBet = *ranges::begin(highestBetR);
@@ -64,9 +64,9 @@ bool Dealer::actionRequired(Player& player) const
 Stack getMaxAmount(std::vector<std::reference_wrapper<Player>> const& players)
 {
     auto leftInHand = getLeftInHand(players);
-    auto secondBiggestAmountR = leftInHand  | ranges::view::transform([](const auto& p){ return p.get().getStack();})
+    auto secondBiggestAmountR = leftInHand  | ranges::views::transform([](const auto& p){ return p.get().getStack();})
                                             | ranges::to<std::vector>
-                                            | ranges::action::sort(std::greater<Stack>{});
+                                            | ranges::actions::sort(std::greater<Stack>{});
     if(ranges::distance(secondBiggestAmountR) > 1)
         return *ranges::next(ranges::begin(secondBiggestAmountR));
     throw std::runtime_error("max amount could not be deduced as not enough players are left in the hand");
@@ -126,10 +126,10 @@ void Dealer::acceptBet(Player& player, BettingAction const& bettingAction)
 
 bool allinIsCalled(Stack allin, std::map<const Player*, Stack> const& bets)
 {
-    auto sortedBets = bets | ranges::view::transform([](const auto& pr){ return pr.second; })
+    auto sortedBets = bets | ranges::views::transform([](const auto& pr){ return pr.second; })
                            | ranges::to<std::vector>
-                           | ranges::action::sort
-                           | ranges::action::reverse;
+                           | ranges::actions::sort
+                           | ranges::actions::reverse;
     auto secondLargestIt = ranges::next(ranges::begin(sortedBets));
     if(secondLargestIt != ranges::end(sortedBets))
         return *secondLargestIt >= allin;
@@ -175,9 +175,9 @@ void showdown(Pot& pot, Board const& board, HandHistory& handHistory)
 {
     // show down
     std::optional<std::pair<Hand, std::vector<const Player*>>> currentWinner;
-    auto players = pot.getBets() | ranges::view::transform([](const auto& pr){ return pr.first; })
+    auto players = pot.getBets() | ranges::views::transform([](const auto& pr){ return pr.first; })
                                  | ranges::to<std::vector>;
-    for(auto& player : players | ranges::view::filter([](const auto& p){ return p->hasHoleCards();}))
+    for(auto& player : players | ranges::views::filter([](const auto& p){ return p->hasHoleCards();}))
     {
         if( not currentWinner)
         {
@@ -233,7 +233,7 @@ bool Dealer::awardPots(Board const& board, HandHistory& handHistory)
     if(board.street() == River)
     {
         showdown(getCurrentPot(), board, handHistory);
-        for(auto& sidepot : closedPots_ | ranges::view::reverse)
+        for(auto& sidepot : closedPots_ | ranges::views::reverse)
             showdown(sidepot, board, handHistory);
         return true;
     }

@@ -58,7 +58,7 @@ std::string BoardAction::toString() const
     for(int i = 0; i < N; ++i)
         firstCards += board.getCards()[i].toString() + " ";
     if(board.street() >= Flop)
-        firstCards = firstCards | ranges::view::take(ranges::size(firstCards)-1) | ranges::to<std::string>();
+        firstCards = firstCards | ranges::views::take(ranges::size(firstCards)-1) | ranges::to<std::string>();
     if(board.street() > Preflop)
         firstCards = '[' + firstCards + ']';
     if(board.street() >= Turn)
