@@ -306,7 +306,7 @@ bool operator!=(MadeHand52 const& l, MadeHand52 const& r)
     return not (l == r);
 }
 
-MadeHand52 getBestHand(Hand hand)
+MadeHand52 getBestHand(Hand const& hand)
 { 
     auto cards = hand.getCards();
     MadeHand52 bestHand = MadeHand52(cards.begin(), cards.begin() + 5);
@@ -320,7 +320,7 @@ MadeHand52 getBestHand(Hand hand)
     return bestHand;
 }
 
-int compareHands(Hand left, Hand right)
+int compareHands(Hand const& left, Hand const& right)
 {
     MadeHand52 bestLeft = getBestHand(left);
     MadeHand52 bestRight = getBestHand(right);

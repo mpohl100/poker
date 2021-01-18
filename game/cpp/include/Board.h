@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Card52.h"
+#include "HoleCards.h"
 
 #include <vector>
 
@@ -28,6 +29,7 @@ class Board{
         void dealTurn(Card52 turn);
         void dealRiver(Card52 river);
         std::vector<Card52> const& getCards() const;
+        std::vector<HoleCards> getBestHoldings() const;
     private:
         std::vector<Card52> cards_;
 

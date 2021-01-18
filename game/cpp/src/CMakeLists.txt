@@ -13,6 +13,7 @@ set( LIB_SOURCES
     Action.cpp
     Dealer.cpp
     HandRange.cpp
+    RatedHand.cpp
     )
 
 set( LIBNAME game)

@@ -32,7 +32,7 @@ private:
     Board board_;
 };
 
-int compareHands(Hand left, Hand right);
+int compareHands(Hand const& left, Hand const& right);
 
 class MadeHand52{
 public:
@@ -72,7 +72,7 @@ bool operator>=(MadeHand52 const& l, MadeHand52 const& r);
 bool operator==(MadeHand52 const& l, MadeHand52 const& r);
 bool operator!=(MadeHand52 const& l, MadeHand52 const& r);
 
-MadeHand52 getBestHand(Hand hand);
+MadeHand52 getBestHand(Hand const& hand);
 
 class DrawingHand52{
 public:

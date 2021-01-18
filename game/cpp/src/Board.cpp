@@ -1,4 +1,8 @@
 #include "Board.h"
+#include "Hand.h"
+#include "HoleCards.h"
+
+#include <range/v3/all.hpp>
 
 namespace game52{
 
@@ -44,6 +48,24 @@ void Board::dealRiver(Card52 river)
 std::vector<Card52> const& Board::getCards() const
 {
     return cards_;
+}
+
+std::vector<HoleCards> Board::getBestHoldings() const
+{
+    auto nbGen = [i = 0]() mutable { return Card52(i++); };
+    auto cards = ranges::views::generate(nbGen) | ranges::views::take(52) | ranges::to<std::vector>;
+    auto sortedHoldings = ranges::views::cartesian_product(cards, cards)
+                     | ranges::views::filter([](std::tuple<Card52,Card52> const& holeCards){ return std::get<0>(holeCards) != std::get<1>(holeCards);})
+                     | ranges::views::transform([this](std::tuple<Card52, Card52> const& holeCards){ 
+                         HoleCards holding = HoleCards(std::get<0>(holeCards), std::get<1>(holeCards));
+                         return std::pair{ holding, getBestHand(Hand(holding, *this)) }; 
+                         })
+                     | ranges::to<std::vector>
+                     | ranges::actions::sort([](const auto& l, const auto&r){ return l.second > r.second; });
+    std::vector<HoleCards> ret;
+    for(const auto& pr : sortedHoldings)
+        ret.push_back(pr.first);
+    return ret;
 }
 
 }
