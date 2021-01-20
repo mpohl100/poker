@@ -4,4 +4,4 @@ set( EXCEUTABLE_NAME main)
 
 add_executable(${EXCEUTABLE_NAME} main.cpp)
 target_link_libraries(${EXCEUTABLE_NAME} game CONAN_PKG::clara)
-target_include_directories(${EXCEUTABLE_NAME} PUBLIC ../include) 
+target_include_directories(${EXCEUTABLE_NAME} PUBLIC ../src) 

@@ -20,4 +20,3 @@ set( LIBNAME game)
 
 add_library( ${LIBNAME} SHARED ${LIB_SOURCES} )
 target_link_libraries( ${LIBNAME} CONAN_PKG::range-v3)
-target_include_directories(${LIBNAME} PUBLIC ../include)
