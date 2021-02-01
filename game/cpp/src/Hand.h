@@ -58,6 +58,8 @@ public:
     std::array<Rank52,2> findOccurences(int nb) const;
     std::vector<Rank52> getHighCards() const;
     int sum() const;
+    Rank52 getRelevantCard() const;
+    Rank52 getKicker() const;
     static MadeHand52 fromString(std::string const& str);
 
     std::vector<Card52> cards_;
@@ -76,7 +78,7 @@ MadeHand52 getBestHand(Hand const& hand);
 
 class DrawingHand52{
 public:
-    enum DrawRank52{
+    enum class DrawRank52 : int{
         None,
         WheelGutshot,
         Gutshot,
@@ -95,8 +97,12 @@ public:
     DrawingHand52& operator=(DrawingHand52&&) = default;
 
     std::vector<Rank52> getHighCards() const;
-
+    std::vector<Card52> getOuts();
     static DrawingHand52 fromString(std::string const&);
+    bool isFlushDraw() const;
+    bool isStraightDraw() const;
+    bool isOpenend() const;
+
 
     std::vector<Card52> cards_;
     DrawRank52 handRank_;
@@ -109,6 +115,20 @@ bool operator<=(DrawingHand52 const& l, DrawingHand52 const& r);
 bool operator>=(DrawingHand52 const& l, DrawingHand52 const& r);
 bool operator==(DrawingHand52 const& l, DrawingHand52 const& r);
 bool operator!=(DrawingHand52 const& l, DrawingHand52 const& r);
+
+class AllDraws{
+public:
+    AllDraws(Hand const& hand);
+    AllDraws() = default;
+    AllDraws(AllDraws const&) = default;
+    AllDraws& operator=(AllDraws const&) = default;
+    AllDraws(AllDraws&&) = default;
+    AllDraws& operator=(AllDraws&&) = default;
+    int getOuts() const;
+private:
+    std::vector<Card52> cards_;
+    int outs_ = 0;
+};
 
 
 }

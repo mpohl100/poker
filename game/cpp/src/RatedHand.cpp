@@ -22,14 +22,19 @@ float RatedHand::getScore() const
 float RatedHand::getMadeHandScore() const
 {
     MadeHand52 madeHand = getBestHand(Hand(holeCards_, board_));
-    float baseScore = 52*51*int(madeHand.handRank_);
-
-     return baseScore;
+    Rank52 relevantCard = madeHand.getRelevantCard();
+    Rank52 kicker = madeHand.getKicker();
+    float baseScore = 13*13*int(madeHand.handRank_);
+    return baseScore + 13*int(relevantCard) + int(kicker);
 }
 
 float RatedHand::getDrawingHandScore() const
 {
-    return 0;
+    AllDraws allDraws(Hand(holeCards_, board_));
+    float topPair = int(Ten)*13 + int(Jack) + 13*13*int(MadeHand52::Pair);
+    int outs = allDraws.getOuts();
+    topPair *= outs / 9.0;
+    return int(topPair);
 }
 
 }

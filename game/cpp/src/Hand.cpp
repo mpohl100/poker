@@ -7,7 +7,9 @@
 #include <range/v3/all.hpp>
 #include <stdexcept>
 #include <map>
+#include <set>
 #include <algorithm>
+#include <iterator>
 #include <numeric>
 #include <array>
 
@@ -174,6 +176,27 @@ int MadeHand52::sum() const
     return std::accumulate(cards_.begin(), cards_.end(), 0, [](int l, const Card52& r){return l + r.rank();});
 }
 
+
+Rank52 MadeHand52::getRelevantCard() const
+{
+    switch(handRank_){
+        case HighCard: return Deuce;
+        case Pair: return findOccurences(2)[0];
+        case TwoPair: return findOccurences(2)[0];
+        case Trips: return findOccurences(3)[0];
+        case Straight: return getHighCards()[0];
+        case Flush: return getHighCards()[0];
+        case FullHouse: return findOccurences(3)[0];
+        case Quads: return findOccurences(4)[0];
+        case StraightFlush: return getHighCards()[0];
+    }
+}
+
+Rank52 MadeHand52::getKicker() const
+{
+    return getHighCards()[0];
+}
+
 MadeHand52 MadeHand52::fromString(std::string const& str)
 {
     auto cards =  str | ranges::views::split(' ')
@@ -331,7 +354,7 @@ int compareHands(Hand const& left, Hand const& right)
 
 DrawingHand52::DrawingHand52(std::vector<Card52>::iterator begin, std::vector<Card52>::iterator end )
     : cards_(begin, end)
-    , handRank_(DrawingHand52::None)
+    , handRank_(DrawingHand52::DrawRank52::None)
 {
     if(cards_.size() != 4)
         throw std::runtime_error("drawing hand != size 4");
@@ -369,21 +392,21 @@ DrawingHand52::DrawingHand52(std::vector<Card52>::iterator begin, std::vector<Ca
 
         // set the handrank
         if(not isWheelGutshot and not isGutshot and not isOpenend and not isFlush)
-            handRank_ = None;
+            handRank_ = DrawRank52::None;
         if(isWheelGutshot and not isFlush)
-            handRank_ = WheelGutshot;
+            handRank_ = DrawRank52::WheelGutshot;
         if(isGutshot and not isFlush)
-            handRank_ = Gutshot;
+            handRank_ = DrawRank52::Gutshot;
         if(isOpenend and not isFlush)
-            handRank_ = Openend;
+            handRank_ = DrawRank52::Openend;
         if(isFlush)
-            handRank_ = Flush;
+            handRank_ = DrawRank52::Flush;
         if(isWheelGutshot and isFlush)
-            handRank_ = FlushWheelGutshot;
+            handRank_ = DrawRank52::FlushWheelGutshot;
         if(isGutshot and isFlush)
-            handRank_ = FlushGutshot;
+            handRank_ = DrawRank52::FlushGutshot;
         if(isOpenend and isFlush)
-            handRank_ = FlushOpenend;
+            handRank_ = DrawRank52::FlushOpenend;
     }
 }
 
@@ -391,6 +414,114 @@ std::vector<Rank52> DrawingHand52::getHighCards() const
 {
     return cards_ | ranges::views::transform([](const auto& card){ return card.rank(); })
                   | ranges::to<std::vector>;
+}
+
+std::vector<Card52> getAllCards(Suit suit)
+{
+    std::vector<Card52> ret;
+    for(Rank52 rank = Deuce; rank < Ace + 1; rank = Rank52(int(rank) + 1))
+        ret.push_back(Card52(rank, suit));
+    return ret;
+}
+
+std::vector<Card52> getAllCards(Rank52 rank)
+{
+    std::vector<Card52> ret;
+    for(Suit suit = Hearts; suit <= Clubs; suit = Suit(int(suit) + 1))
+        ret.push_back(Card52(rank, suit));
+    return ret;
+}
+
+bool DrawingHand52::isFlushDraw() const
+{
+    switch(handRank_){
+        case DrawRank52::None:
+        case DrawRank52::WheelGutshot:
+        case DrawRank52::Gutshot:
+        case DrawRank52::Openend:
+            return false;
+        case DrawRank52::Flush:
+        case DrawRank52::FlushWheelGutshot:
+        case DrawRank52::FlushGutshot:
+        case DrawRank52::FlushOpenend:
+            return true;
+    }
+    return false;
+}
+
+bool DrawingHand52::isStraightDraw() const
+{
+
+    switch(handRank_){   
+        case DrawRank52::None:
+        case DrawRank52::Flush:
+            return false; 
+        case DrawRank52::WheelGutshot:
+        case DrawRank52::Gutshot:
+        case DrawRank52::Openend:
+        case DrawRank52::FlushWheelGutshot:
+        case DrawRank52::FlushGutshot:
+        case DrawRank52::FlushOpenend:
+            return true;
+    }
+    return false;
+}
+
+bool DrawingHand52::isOpenend() const
+{
+    switch(handRank_){   
+        case DrawRank52::None:
+        case DrawRank52::Flush: 
+        case DrawRank52::WheelGutshot:
+        case DrawRank52::Gutshot:
+        case DrawRank52::FlushWheelGutshot:
+        case DrawRank52::FlushGutshot:
+            return false;
+        case DrawRank52::Openend:
+        case DrawRank52::FlushOpenend:
+            return true;
+    }
+    return false;
+}
+
+std::vector<Card52> DrawingHand52::getOuts()
+{
+    std::vector<Card52> outs;
+    if(isFlushDraw())
+    {
+        Suit suit = cards_[0].suit();
+        std::vector<Card52> allSuits = getAllCards(suit);
+        std::sort(cards_.begin(), cards_.end());
+        std::set_difference(allSuits.begin(), allSuits.end(),
+                            cards_.begin(), cards_.end(),
+                            std::back_inserter(outs));
+    }
+    if(isStraightDraw())
+    {
+        std::sort(cards_.begin(), cards_.end());
+        if(isOpenend())
+        {
+            auto lowerRank = int(cards_.begin()->rank()) - 1;
+            auto upperRank = int(cards_.rbegin()->rank()) + 1;
+            if(lowerRank < 0) lowerRank = int(Ace);
+            auto lowerOuts = getAllCards(Rank52(lowerRank));
+            auto upperOuts = getAllCards(Rank52(upperRank));
+            outs.insert(outs.end(), lowerOuts.begin(), lowerOuts.end());
+            outs.insert(outs.end(), upperOuts.begin(), upperOuts.end());
+        }
+        else
+        {
+            // find the missing rank
+            auto it = std::ranges::adjacent_find(cards_, [](const auto& l, const auto& r)
+                                {
+                                    return int(r.rank()) - int(l.rank()) == 2;
+                                });
+            Rank52 missingRank = Rank52(int(it->rank()) + 1);
+            auto missingOuts = getAllCards(missingRank);
+            outs.insert(outs.end(), missingOuts.begin(), missingOuts.end());
+        }
+    }
+    return outs;
 }
 
 
@@ -437,6 +568,43 @@ bool operator==(DrawingHand52 const& l, DrawingHand52 const& r)
 bool operator!=(DrawingHand52 const& l, DrawingHand52 const& r)
 {
     return not (l == r);
+}
+
+AllDraws::AllDraws(Hand const& hand)
+    : cards_(hand.getCards())
+    , outs_(0)
+{
+    if(cards_.size() == 7)
+        return;
+    std::vector<DrawingHand52> draws;
+    for_each_combination(cards_.begin(), cards_.begin() + 4, cards_.end(), 
+                        [&draws](const auto& left, const auto& right)
+                        {
+                            DrawingHand52 draw(left, right);
+                            if(draw.handRank_ > DrawingHand52::DrawRank52::None)
+                                draws.push_back(draw);
+                            return false;
+                        });
+    // collect all outs
+    std::set<Card52> outs;
+    for(auto& draw : draws)
+        for(const auto& out : draw.getOuts())
+            outs.insert(out);
+    // find the intersection of the hand and the outs.
+    // the interesection must be zero elements for it to be a true draw
+    std::vector<Card52> intersection;
+    std::sort(cards_.begin(), cards_.end());
+    std::set_intersection(cards_.begin(), cards_.end(),
+                        outs.begin(), outs.end(),
+                        std::back_inserter(intersection));
+    if(intersection.size() > 0)
+        return;
+    outs_ = outs.size();
+}
+
+int AllDraws::getOuts() const
+{
+    return outs_;
 }
 
 }
