@@ -1,3 +1,5 @@
+add_subdirectory(par)
+
 set( LIB_SOURCES 
     Card52.cpp
     Deck52.cpp
