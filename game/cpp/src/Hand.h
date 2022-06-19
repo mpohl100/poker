@@ -60,6 +60,8 @@ public:
     int sum() const;
     Rank52 getRelevantCard() const;
     Rank52 getKicker() const;
+    HandRank52 getRank() const;
+    std::vector<Card52> getCards() const;
     static MadeHand52 fromString(std::string const& str);
 
     std::vector<Card52> cards_;

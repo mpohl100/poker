@@ -17,8 +17,11 @@ public:
     RatedHand& operator=(RatedHand&&) = default;
 
     float getScore() const;
+    double getSimulatedScore() const;
 
 private:
+
+    std::vector<Board> getBoards() const;
     float getMadeHandScore() const;
     float getDrawingHandScore() const;
     HoleCards holeCards_;

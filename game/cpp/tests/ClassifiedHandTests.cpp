@@ -9,31 +9,31 @@ namespace {
 
 TEST_CASE("Hands", "[game]") {
     SECTION("HandRanks"){ 
-            CHECK(MadeHand52::fromString("Kh Td 2c 3s 5d").handRank_ == MadeHand52::HighCard);
-            CHECK(MadeHand52::fromString("Ah Td 2c 3s 5d").handRank_ == MadeHand52::HighCard);
-            CHECK(MadeHand52::fromString("Kh 2h 2c Qs Jd").handRank_ == MadeHand52::Pair);
-            CHECK(MadeHand52::fromString("Ah 2h 2c 3s 5d").handRank_ == MadeHand52::Pair);
-            CHECK(MadeHand52::fromString("Ah 2h 2c 4s 5d").handRank_ == MadeHand52::Pair);
-            CHECK(MadeHand52::fromString("Ah Td Tc 3s 5d").handRank_ == MadeHand52::Pair);
-            CHECK(MadeHand52::fromString("Ah Ad 2c 3s 5d").handRank_ == MadeHand52::Pair);
-            CHECK(MadeHand52::fromString("Qh Qd 2c 2s 5d").handRank_ == MadeHand52::TwoPair);
-            CHECK(MadeHand52::fromString("Qh Qd Jc Js 6d").handRank_ == MadeHand52::TwoPair);
-            CHECK(MadeHand52::fromString("Ah Ad 2c 2s 5d").handRank_ == MadeHand52::TwoPair);
-            CHECK(MadeHand52::fromString("Ah 2d 2c 2s 5d").handRank_ == MadeHand52::Trips);
-            CHECK(MadeHand52::fromString("Ah Ad Ac 2s 5d").handRank_ == MadeHand52::Trips);
-            CHECK(MadeHand52::fromString("Ah Ad Ac 3s 5d").handRank_ == MadeHand52::Trips);
-            CHECK(MadeHand52::fromString("Ah 2d 3c 4s 5d").handRank_ == MadeHand52::Straight);
-            CHECK(MadeHand52::fromString("2d 3c 4s 5d 6c").handRank_ == MadeHand52::Straight);
-            CHECK(MadeHand52::fromString("Ah 2h Kh 4h 5h").handRank_ == MadeHand52::Flush);
-            CHECK(MadeHand52::fromString("Ah 2h Kh 6h 5h").handRank_ == MadeHand52::Flush);
-            CHECK(MadeHand52::fromString("5h 2d 2c 2s 5d").handRank_ == MadeHand52::FullHouse);
-            CHECK(MadeHand52::fromString("6h 2d 2c 2s 6d").handRank_ == MadeHand52::FullHouse);
-            CHECK(MadeHand52::fromString("5h 3d 3c 3s 5d").handRank_ == MadeHand52::FullHouse);
-            CHECK(MadeHand52::fromString("5h 2d 2c 2s 2h").handRank_ == MadeHand52::Quads);
-            CHECK(MadeHand52::fromString("5h 3d 3c 3s 3h").handRank_ == MadeHand52::Quads);
-            CHECK(MadeHand52::fromString("Ah 2h 3h 4h 5h").handRank_ == MadeHand52::StraightFlush);
-            CHECK(MadeHand52::fromString("2h 3h 4h 5h 6h").handRank_ == MadeHand52::StraightFlush);
-            CHECK(MadeHand52::fromString("Th Jh Qh Kh Ah").handRank_ == MadeHand52::StraightFlush);
+            CHECK(MadeHand52::fromString("Kh Td 2c 3s 5d").handRank_ == MadeHand52::HandRank52::HighCard);
+            CHECK(MadeHand52::fromString("Ah Td 2c 3s 5d").handRank_ == MadeHand52::HandRank52::HighCard);
+            CHECK(MadeHand52::fromString("Kh 2h 2c Qs Jd").handRank_ == MadeHand52::HandRank52::Pair);
+            CHECK(MadeHand52::fromString("Ah 2h 2c 3s 5d").handRank_ == MadeHand52::HandRank52::Pair);
+            CHECK(MadeHand52::fromString("Ah 2h 2c 4s 5d").handRank_ == MadeHand52::HandRank52::Pair);
+            CHECK(MadeHand52::fromString("Ah Td Tc 3s 5d").handRank_ == MadeHand52::HandRank52::Pair);
+            CHECK(MadeHand52::fromString("Ah Ad 2c 3s 5d").handRank_ == MadeHand52::HandRank52::Pair);
+            CHECK(MadeHand52::fromString("Qh Qd 2c 2s 5d").handRank_ == MadeHand52::HandRank52::TwoPair);
+            CHECK(MadeHand52::fromString("Qh Qd Jc Js 6d").handRank_ == MadeHand52::HandRank52::TwoPair);
+            CHECK(MadeHand52::fromString("Ah Ad 2c 2s 5d").handRank_ == MadeHand52::HandRank52::TwoPair);
+            CHECK(MadeHand52::fromString("Ah 2d 2c 2s 5d").handRank_ == MadeHand52::HandRank52::Trips);
+            CHECK(MadeHand52::fromString("Ah Ad Ac 2s 5d").handRank_ == MadeHand52::HandRank52::Trips);
+            CHECK(MadeHand52::fromString("Ah Ad Ac 3s 5d").handRank_ == MadeHand52::HandRank52::Trips);
+            CHECK(MadeHand52::fromString("Ah 2d 3c 4s 5d").handRank_ == MadeHand52::HandRank52::Straight);
+            CHECK(MadeHand52::fromString("2d 3c 4s 5d 6c").handRank_ == MadeHand52::HandRank52::Straight);
+            CHECK(MadeHand52::fromString("Ah 2h Kh 4h 5h").handRank_ == MadeHand52::HandRank52::Flush);
+            CHECK(MadeHand52::fromString("Ah 2h Kh 6h 5h").handRank_ == MadeHand52::HandRank52::Flush);
+            CHECK(MadeHand52::fromString("5h 2d 2c 2s 5d").handRank_ == MadeHand52::HandRank52::FullHouse);
+            CHECK(MadeHand52::fromString("6h 2d 2c 2s 6d").handRank_ == MadeHand52::HandRank52::FullHouse);
+            CHECK(MadeHand52::fromString("5h 3d 3c 3s 5d").handRank_ == MadeHand52::HandRank52::FullHouse);
+            CHECK(MadeHand52::fromString("5h 2d 2c 2s 2h").handRank_ == MadeHand52::HandRank52::Quads);
+            CHECK(MadeHand52::fromString("5h 3d 3c 3s 3h").handRank_ == MadeHand52::HandRank52::Quads);
+            CHECK(MadeHand52::fromString("Ah 2h 3h 4h 5h").handRank_ == MadeHand52::HandRank52::StraightFlush);
+            CHECK(MadeHand52::fromString("2h 3h 4h 5h 6h").handRank_ == MadeHand52::HandRank52::StraightFlush);
+            CHECK(MadeHand52::fromString("Th Jh Qh Kh Ah").handRank_ == MadeHand52::HandRank52::StraightFlush);
     }
     SECTION("HandsSorted") {
         std::vector<MadeHand52> hands{
@@ -81,18 +81,18 @@ TEST_CASE("Hands", "[game]") {
 
 
 SECTION("DrawRanks"){ 
-            CHECK(DrawingHand52::fromString("Kh Td 2c 3s").handRank_ == DrawingHand52::None);
-            CHECK(DrawingHand52::fromString("Ah 2d 3c 4s").handRank_ == DrawingHand52::WheelGutshot);
-            CHECK(DrawingHand52::fromString("2d 3c 4s 6d").handRank_ == DrawingHand52::Gutshot);
-            CHECK(DrawingHand52::fromString("Jd Qc Ks Ad").handRank_ == DrawingHand52::Gutshot);
-            CHECK(DrawingHand52::fromString("2d 3c 4s 5d").handRank_ == DrawingHand52::Openend);
-            CHECK(DrawingHand52::fromString("Ah 2h Kh 4h").handRank_ == DrawingHand52::Flush);
-            CHECK(DrawingHand52::fromString("Ah 2h Kh 6h").handRank_ == DrawingHand52::Flush);
-            CHECK(DrawingHand52::fromString("Ah 2h 3h 4h").handRank_ == DrawingHand52::FlushWheelGutshot);
-            CHECK(DrawingHand52::fromString("2h 3h 4h 6h").handRank_ == DrawingHand52::FlushGutshot);
-            CHECK(DrawingHand52::fromString("Jh Qh Kh Ah").handRank_ == DrawingHand52::FlushGutshot);
-            CHECK(DrawingHand52::fromString("2h 3h 4h 5h").handRank_ == DrawingHand52::FlushOpenend);
-            CHECK(DrawingHand52::fromString("Th Jh Qh Kh").handRank_ == DrawingHand52::FlushOpenend);
+            CHECK(DrawingHand52::fromString("Kh Td 2c 3s").handRank_ == DrawingHand52::DrawRank52::None);
+            CHECK(DrawingHand52::fromString("Ah 2d 3c 4s").handRank_ == DrawingHand52::DrawRank52::WheelGutshot);
+            CHECK(DrawingHand52::fromString("2d 3c 4s 6d").handRank_ == DrawingHand52::DrawRank52::Gutshot);
+            CHECK(DrawingHand52::fromString("Jd Qc Ks Ad").handRank_ == DrawingHand52::DrawRank52::Gutshot);
+            CHECK(DrawingHand52::fromString("2d 3c 4s 5d").handRank_ == DrawingHand52::DrawRank52::Openend);
+            CHECK(DrawingHand52::fromString("Ah 2h Kh 4h").handRank_ == DrawingHand52::DrawRank52::Flush);
+            CHECK(DrawingHand52::fromString("Ah 2h Kh 6h").handRank_ == DrawingHand52::DrawRank52::Flush);
+            CHECK(DrawingHand52::fromString("Ah 2h 3h 4h").handRank_ == DrawingHand52::DrawRank52::FlushWheelGutshot);
+            CHECK(DrawingHand52::fromString("2h 3h 4h 6h").handRank_ == DrawingHand52::DrawRank52::FlushGutshot);
+            CHECK(DrawingHand52::fromString("Jh Qh Kh Ah").handRank_ == DrawingHand52::DrawRank52::FlushGutshot);
+            CHECK(DrawingHand52::fromString("2h 3h 4h 5h").handRank_ == DrawingHand52::DrawRank52::FlushOpenend);
+            CHECK(DrawingHand52::fromString("Th Jh Qh Kh").handRank_ == DrawingHand52::DrawRank52::FlushOpenend);
     }
     SECTION("DrawsSorted") {
         std::vector<DrawingHand52> hands{

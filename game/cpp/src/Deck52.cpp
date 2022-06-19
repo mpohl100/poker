@@ -58,6 +58,10 @@ Card52 Deck52::getCard()
     return dealCard();
 }
 
+std::vector<Card52> Deck52::getRemainingCards() const
+{
+    return {cards_.begin() + position_, cards_.end()};
+}
 void Deck52::moveToFront(std::vector<Card52> const& cards)
 {
     int i = 0;

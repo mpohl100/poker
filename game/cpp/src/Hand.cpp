@@ -197,6 +197,16 @@ Rank52 MadeHand52::getKicker() const
     return getHighCards()[0];
 }
 
+MadeHand52::HandRank52 MadeHand52::getRank() const
+{
+    return handRank_;
+}
+
+std::vector<Card52> MadeHand52::getCards() const
+{
+    return cards_;
+}
+
 MadeHand52 MadeHand52::fromString(std::string const& str)
 {
     auto cards =  str | ranges::views::split(' ')

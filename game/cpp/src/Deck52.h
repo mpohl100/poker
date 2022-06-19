@@ -20,6 +20,7 @@ class Deck52{
         HoleCards getHoleCards();
         std::vector<Card52> getFlop();
         Card52 getCard();
+        std::vector<Card52> getRemainingCards() const;
 
     void moveToFront(std::vector<Card52> const& cards);
     void shuffleRemainder(); 
