@@ -21,4 +21,15 @@ std::vector<Card52> const& HoleCards::getCards() const
     return cards_;
 }
 
+std::vector<HoleCards> HoleCards::getAll()
+{
+    std::vector<HoleCards> ret;
+    auto allCards = Card52::getAll();
+    for(Card52 const& card1 : allCards)
+        for(Card52 const& card2 : allCards)
+            if(card1 != card2)
+                ret.push_back(HoleCards(card1, card2));
+    return ret;
+}
+
 }

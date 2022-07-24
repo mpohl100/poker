@@ -55,4 +55,6 @@ private:
 
 void printPreflopStrengths();
 
+void calculatePreflopStrengths();
+
 }

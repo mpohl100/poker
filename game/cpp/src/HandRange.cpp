@@ -1,6 +1,7 @@
 #include "HandRange.h"
 #include "Deck52.h"
 #include "Hand.h"
+#include "RatedHand.h"
 
 #include <range/v3/all.hpp>
 
@@ -8,6 +9,7 @@
 #include <numeric>
 #include <vector>
 #include <iostream>
+#include <map>
 
 namespace game52{
 
@@ -75,6 +77,20 @@ void printPreflopStrengths()
     std::sort(flattenedStrengths.begin(), flattenedStrengths.end(), [](const auto& l, const auto& r){ return l.second > r.second; });
     for(const auto& strength : flattenedStrengths)
         std::cout << getRepresentativeHolding(strength.first).toString() << ' ' << strength.second << '\n';
+}
+
+void calculatePreflopStrengths()
+{
+    std::multimap<double, HoleCards> results;
+    auto holecards = HoleCards::getAll();
+    for(HoleCards const& holding : holecards)
+    {
+        RatedHand ratedHand(holding, Board{});
+        double score = ratedHand.getSimulatedScore();
+        results.insert({score, holding});
+    }
+    for(auto it = results.rbegin(); it != results.rend(); ++it)
+        std::cout << "Holding: " << it->second.toString() << ": score " << it->first << '\n'; 
 }
 
 }

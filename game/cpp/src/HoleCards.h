@@ -18,6 +18,7 @@ class HoleCards
         std::string toString() const;
         bool empty() const;
         std::vector<Card52> const& getCards() const;
+        static std::vector<HoleCards> getAll();
     private:
         std::vector<Card52> cards_;
 };

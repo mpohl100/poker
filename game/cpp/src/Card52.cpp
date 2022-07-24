@@ -110,4 +110,12 @@ std::string Card52::toString() const
     return s;
 }
 
+std::vector<Card52> Card52::getAll()
+{
+    std::vector<Card52> ret;
+    for(int i = 0; i < 52; ++i)
+        ret.push_back(Card52(i));
+    return ret;
+}
+
 }

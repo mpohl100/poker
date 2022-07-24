@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace game52{
 
@@ -46,6 +47,7 @@ class Card52{
         Suit suit() const;
         int nb() const;
         std::string toString() const;
+        static std::vector<Card52> getAll();
         friend constexpr auto operator<=>(Card52 const& l, Card52 const& r) = default;
     private:    
         Rank52 rank_;

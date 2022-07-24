@@ -6,10 +6,9 @@
 
 namespace game52{
 
-RatedHand::RatedHand(HoleCards const& holeCards, Board const& board, Deck52 const& deck)
+RatedHand::RatedHand(HoleCards const& holeCards, Board const& board)
     : holeCards_(holeCards)
     , board_(board)
-    , deck_(deck)
 {}
 
 
@@ -47,7 +46,7 @@ std::vector<Board> RatedHand::getBoards() const
         });
     }
     else{
-        for(size_t i = 0; i < 1000; ++i){
+        for(size_t i = 0; i < nbPreflopBoards_; ++i){
             Deck52 localDeck = deck;
             localDeck.shuffleRemainder();
             Board board;
